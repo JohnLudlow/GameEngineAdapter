@@ -94,6 +94,7 @@ jobs:
       with:
         lfs: true
         fetch-depth: 0
+        submodules: recursive
 
     - uses: ./actions/steps/dotnet/format
     - uses: ./actions/steps/rumdl
@@ -111,6 +112,7 @@ jobs:
       with:
         lfs: true
         fetch-depth: 0
+        submodules: recursive
 
     - uses: ./actions/steps/codeql
 
@@ -125,5 +127,6 @@ jobs:
       with:
         lfs: true
         fetch-depth: 0
+        submodules: recursive
 
     - uses: ./actions/steps/pr-size
