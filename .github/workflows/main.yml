@@ -40,7 +40,7 @@ jobs:
     - id: build
       uses: ./actions/steps/dotnet/build
 
-    - tag-commit:
+    - id: tag-commit
       uses: ./actions/steps/tag-commit
 
   unit-test:
