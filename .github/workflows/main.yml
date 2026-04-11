@@ -36,7 +36,7 @@ jobs:
         submodules: recursive
 
     - shell: pwsh
-      run: Get-ChildItem -recursive | select FullName
+      run: Get-ChildItem -Recurse | select FullName
 
     - id: setup
       uses: ./actions/steps/setup
