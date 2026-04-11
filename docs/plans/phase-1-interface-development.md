@@ -34,7 +34,7 @@ Phase 1 defines the stable adapter contracts and DTO shapes used by all adapters
 
 ## Plan status
 
-Not started
+Complete
 
 ## Definition of terms
 
@@ -58,14 +58,14 @@ Not started
 
 ### Plan requirements
 
-- (***Not started***) API definitions committed with XML docs and examples.
+- (***Complete***) API definitions committed with XML docs and examples.
   - GIVEN interface PR is opened
   - WHEN team reviews and approves
   - THEN interfaces are versioned and published for adapter implementations.
 
 ### Phase 1 — Adapter contracts and DTOs
 
-***Not started***
+***Complete***
 
 #### Objective
 
@@ -73,27 +73,29 @@ Define stable adapter contracts and DTO shapes. Produce small, well-documented C
 
 #### Technical details
 
-- Define `IEngineAdapter` (lifecycle, capability descriptor, provider accessors such as `GetRenderProvider`, `GetInputProvider`).
-- Define provider interfaces (`IRenderProvider`, `IInputProvider`, `IUserInterfaceProvider`, `IAssetProvider`) that expose minimal, adapter-owned runtime surfaces and DTO translation helpers.
+- Define `IEngineAdapter` (lifecycle, capability descriptor, provider property accessors such as `RenderProvider`, `InputProvider`, `AudioPlayer`).
+- Define provider interfaces (`IRenderProvider`, `IInputProvider`, `IUserInterfaceProvider`, `IAssetProvider`) that expose minimal, adapter-owned runtime surfaces and DTO translation helpers. Providers are exposed as read-only properties on `IEngineAdapter`.
 - Providers are intentionally lightweight and adapter-owned: callers obtain a provider from the adapter and submit DTOs or poll events through that provider.
-- Define `IAudioPlayer` (play/stop/volume, audio asset references) and `IAssetProvider`/`IAssetLoader` for asset lifecycle operations.
+- Define `IAudioPlayer` (play/stop/volume, audio asset references), `IAssetProvider` for asset caching and lifecycle management (unload, query, cache eviction), and `IAssetLoader` for loading assets from storage into the asset provider.
 - Provide capability descriptor model (`EngineCapabilities`) returned at adapter init and allow specific engine capability variants (e.g. `HeadlessEngineCapabilities`) to derive from the base capabilities.
 
 #### Missing type definitions
 
-The following types are referenced by existing interfaces but do not yet have source files. They must be created in `src/GameEngineAdapter/` following the `readonly record struct` and single-file-per-type conventions.
+The following types are referenced by existing interfaces but do not yet have source files. They must be created in `src/GameEngineAdapter/` under the `JohnLudlow.GameEngineAdapter.Core` namespace, following the `readonly record struct` and single-file-per-type conventions.
 
 ##### EngineConfig
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// Configuration data for initializing an engine adapter.
 /// </summary>
-/// <param name="AdapterType">Adapter type or engine backend identifier (e.g. "MonoGame", "Stride").</param>
+/// <param name="AdapterName">Adapter type or engine backend identifier (e.g. "MonoGame", "Stride").</param>
 /// <param name="ResourcePath">Optional path to engine resources or platform binaries.</param>
 /// <param name="Options">Optional key-value configuration entries.</param>
 public readonly record struct EngineConfig(
-    string AdapterType,
+    string AdapterName,
     string? ResourcePath,
     IReadOnlyDictionary<string, object>? Options);
 ```
@@ -101,6 +103,8 @@ public readonly record struct EngineConfig(
 ##### FrameScope
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// Disposable scope for a single render frame. Disposing finalizes the frame.
 /// </summary>
@@ -114,6 +118,8 @@ public readonly record struct FrameScope : IDisposable
 ##### SpriteDrawDto
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// DTO for submitting a sprite draw command.
 /// </summary>
@@ -131,6 +137,8 @@ public readonly record struct SpriteDrawDto(
 ##### TextDrawDto
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// DTO for submitting a text draw command.
 /// </summary>
@@ -152,6 +160,8 @@ public readonly record struct TextDrawDto(
 ##### MeshDrawDto
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// DTO for submitting a mesh draw command.
 /// </summary>
@@ -169,6 +179,8 @@ public readonly record struct MeshDrawDto(
 ##### IInputProvider
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// Adapter-owned provider for polling input state (keyboard, mouse, gamepad).
 /// </summary>
@@ -188,6 +200,8 @@ public interface IInputProvider
 ##### IUserInterfaceProvider
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// Adapter-owned provider for user interface operations.
 /// </summary>
@@ -200,25 +214,36 @@ public interface IUserInterfaceProvider
 ##### IAssetProvider
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
-/// Adapter-owned provider for asset lifecycle management (load, unload, query).
+/// Adapter-owned provider for asset lifecycle management, caching, and querying.
+/// Does not load assets directly — delegates to <see cref="IAssetLoader"/> for I/O.
 /// </summary>
 public interface IAssetProvider
 {
-    /// <summary>Loads an asset by identifier and returns a handle.</summary>
-    object LoadAsset(string assetId);
+    /// <summary>Returns the asset loader used by this provider.</summary>
+    IAssetLoader Loader { get; }
 
-    /// <summary>Unloads a previously loaded asset.</summary>
+    /// <summary>Returns a previously loaded asset by identifier, or null if not cached.</summary>
+    object? GetAsset(string assetId);
+
+    /// <summary>Unloads a previously loaded asset and removes it from the cache.</summary>
     void UnloadAsset(string assetId);
 
-    /// <summary>Returns true if the specified asset is currently loaded.</summary>
+    /// <summary>Returns true if the specified asset is currently loaded and cached.</summary>
     bool IsAssetLoaded(string assetId);
+
+    /// <summary>Evicts all cached assets.</summary>
+    void ClearCache();
 }
 ```
 
 ##### IAudioPlayer
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// Interface for audio playback (play, stop, volume control).
 /// </summary>
@@ -238,8 +263,11 @@ public interface IAudioPlayer
 ##### IAssetLoader
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
-/// Interface for async and sync asset loading, separate from the asset provider.
+/// Interface for loading assets from storage (disk, network, embedded resources).
+/// Separate from <see cref="IAssetProvider"/> which handles caching and lifecycle.
 /// </summary>
 public interface IAssetLoader
 {
@@ -253,7 +281,7 @@ public interface IAssetLoader
 
 #### Phase requirements
 
-- (***Not started***) Adapter lifecycle & capability negotiation
+- (***Complete***) Adapter lifecycle & capability negotiation
   - GIVEN adapters are present at startup
   - WHEN the game queries capabilities
   - THEN `IEngineAdapter` returns `EngineCapabilities` and exposes `Initialize`/`Shutdown` semantics and diagnostics for mismatches.
@@ -261,6 +289,8 @@ public interface IAssetLoader
 #### Examples
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// Root interface for an engine adapter.
 /// </summary>
@@ -276,20 +306,25 @@ public interface IEngineAdapter : IDisposable
   Task ShutdownAsync(CancellationToken ct = default);
 
   /// <summary>Gets the provider for rendering operations.</summary>
-  IRenderProvider GetRenderProvider();
+  IRenderProvider RenderProvider { get; }
 
   /// <summary>Gets the provider for polling input state.</summary>
-  IInputProvider GetInputProvider();
+  IInputProvider InputProvider { get; }
 
   /// <summary>Gets the provider for user interface operations.</summary>
-  IUserInterfaceProvider GetUserInterfaceProvider();
+  IUserInterfaceProvider UserInterfaceProvider { get; }
 
   /// <summary>Gets the provider for asset management.</summary>
-  IAssetProvider GetAssetProvider();
+  IAssetProvider AssetProvider { get; }
+
+  /// <summary>Gets the audio player for audio playback.</summary>
+  IAudioPlayer AudioPlayer { get; }
 }
 ```
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// Describes the capabilities and features supported by an engine adapter.
 /// </summary>
@@ -348,6 +383,8 @@ public readonly record struct CameraDescriptor(
 ```
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// Provider for rendering operations and submitting draw commands.
 /// </summary>
@@ -378,6 +415,8 @@ public interface IRenderProvider
 ```
 
 ```csharp
+namespace JohnLudlow.GameEngineAdapter.Core;
+
 /// <summary>
 /// World-space transform for an object.
 /// </summary>
@@ -414,7 +453,7 @@ public readonly record struct MaterialDto(
 ### DTO guidelines
 
 - Use compact DTOs (prefer `readonly record struct`) for draw lists to reduce GC pressure.
-- Provide a small set of primitive types (Sprite, Text, Rect, MeshReference, MaterialDescriptor).
+- Provide a small set of primitive types (Sprite, Text, Rect, MeshReference, MaterialDto).
 - Include an explicit `Transform` and `Layer`/`SortKey` for deterministic ordering.
 
 ### Testing and compatibility
@@ -430,9 +469,7 @@ public readonly record struct MaterialDto(
 
 ### Known issues and design concerns
 
-- **MaterialDescriptor compile error**: `MaterialDescriptor.cs` declares a `readonly struct` but its fields (`ShaderId`, `Uniforms`, `TextureSlots`) are not marked `readonly`, causing CS8340 errors. Convert to a `readonly record struct` to match the updated convention and eliminate the manual field declarations.
-- **MaterialDescriptor vs MaterialDto duplication**: Both types carry `ShaderId`, `Uniforms`/`Dictionary<string,object>`, and `TextureSlots`. Their distinct roles should be clarified — e.g. `MaterialDescriptor` as the engine-facing definition and `MaterialDto` as the cross-boundary transfer object — or they should be consolidated into a single type.
-- **IAssetProvider vs IAssetLoader**: The plan references both. Clarify whether these are separate concerns (provider = lifecycle management, loader = I/O) or should be merged.
+- **MaterialDescriptor removed**: `MaterialDescriptor.cs` previously declared a `readonly struct` with non-`readonly` fields, causing CS8340 errors. The type has been removed from the codebase. `MaterialDto` is now the single material DTO. If an engine-facing material definition is needed in future, define it as a `readonly record struct`.
 
 ## See also
 

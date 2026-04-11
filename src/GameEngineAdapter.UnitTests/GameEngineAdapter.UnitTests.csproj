@@ -16,6 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GameEngineAdapter.Core\GameEngineAdapter.Core.csproj" />
+    <ProjectReference Include="..\GameEngineAdapter.Headless\GameEngineAdapter.Headless.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
-    <RootNamespace>JohnLudlow.GameEngineAdapter</RootNamespace>
+    <RootNamespace>JohnLudlow.GameEngineAdapter.Core</RootNamespace>
   </PropertyGroup>
 
 </Project>

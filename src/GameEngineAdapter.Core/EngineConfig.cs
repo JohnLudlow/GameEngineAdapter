@@ -1,4 +1,4 @@
-namespace JohnLudlow.GameEngineAdapter;
+namespace JohnLudlow.GameEngineAdapter.Core;
 
 
 /// <summary>
