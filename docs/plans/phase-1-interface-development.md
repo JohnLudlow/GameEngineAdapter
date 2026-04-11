@@ -190,7 +190,7 @@ public readonly struct MaterialDto
 
 ## See also
 
-- Parent plan: [Engine Decoupling](engine-decoupling.md)
+- Parent plan: [Engine Decoupling](https://github.com/JohnLudlow/FourXGame/blob/main/docs/plans/4x-game/technical/engine-decoupling/engine-decoupling.md)
 
 ## References
 

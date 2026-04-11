@@ -12,7 +12,7 @@ Use this checklist to ensure consistency and quality before completion.
   - Command:
     - `dotnet run --project TerrainGeneration2D.Benchmarks/TerrainGeneration2D.Benchmarks.csproj`
 - [ ] Diagnostics (WFC/chunking changes): used enable-diagnostics; reviewed counters/events.
-- [ ] Docs index: updated [docs/README.md](../docs/README.md) with links to new docs and ran check-doc-links.
+- [ ] Docs index: updated [docs/README.md](../README.md) with links to new docs and ran check-doc-links.
   - Command:
     - `scripts/check-doc-links.ps1`
 - [ ] Saves impact (terrain generation changes): clarified regeneration expectations; optionally cleared saves via F10.

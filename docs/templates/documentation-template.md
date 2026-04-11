@@ -1,4 +1,4 @@
-﻿# Feature Title
+# Feature Title
 
 ## Overview
 

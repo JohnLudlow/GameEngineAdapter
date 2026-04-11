@@ -1,4 +1,3 @@
-﻿
 # GameEngineAdapter
 
 > [!TIP]

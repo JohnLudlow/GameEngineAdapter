@@ -1,6 +1,22 @@
-﻿# PR Size Override
+# PR Title
 
-If this PR legitimately exceeds normal size limits (5000 lines or 100 files), add `[pr-size-override]` to the title or description and provide justification below:
+Project : [project link]
+Issue : [issue link]
 
-**Justification for override**:
-<!-- Explain why this PR must be large (e.g., automated refactoring, bulk migration) -->
+## PR Overview
+
+A paragraph describing the PR, its goal, justification and brief description of the work done.
+
+## PR Detail
+
+Detailed description of the PR's technical implementation
+
+## PR Impact
+
+Detailed description of the PR's impact on use, in particular any breaking changes.
+
+Use [GitVersion semver flags](https://gitversion.net/docs/reference/version-increments) to indicate a major or minor increment.
+
+## PR Size justification
+
+Justification for overriding pr-size.
