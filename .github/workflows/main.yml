@@ -4,8 +4,7 @@
 name: Build and Test
 
 on:
-  # TODO: Uncomment this line
-  # push:
+  push:
   pull_request:
     types: [opened, synchronize, reopened]
 
