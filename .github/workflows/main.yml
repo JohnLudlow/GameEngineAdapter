@@ -46,8 +46,6 @@ jobs:
 
     - id: tag-commit
       uses: ./actions/steps/git/tag-commit
-      with:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   unit-test:
     needs: build
