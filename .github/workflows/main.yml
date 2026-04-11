@@ -45,7 +45,7 @@ jobs:
       uses: ./actions/steps/dotnet/build
 
     - id: tag-commit
-      uses: ./actions/steps/tag-commit
+      uses: ./actions/steps/git/tag-commit
 
   unit-test:
     needs: build
