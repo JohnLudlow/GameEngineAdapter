@@ -1,91 +1,51 @@
-﻿# Project Name
+# GameEngineAdapter
 
-TODO:
-> [!WARNING]
-> This is a template. Update the project name and description to match the repo
-> This should be an 'elevator pitch' to describe why someone would or would not
-> use this project.
+> [!TIP]
+> **Adapter contracts for decoupled game engines**
 
-A brief description of what this project does and its purpose.
+GameEngineAdapter provides a set of stable, minimal C# interfaces and DTOs for building engine-agnostic game logic and adapters. It enables game code to run on multiple engines (MonoGame, Stride, Raylib, TUI, Headless, etc.) by defining a clear boundary between simulation and engine bindings for rendering, input, audio, and asset management.
+
+**Why use this project?**
+
+- Write game logic once, run it on any supported engine
+- Clean separation of concerns for testability and portability
+- Minimal, allocation-friendly DTOs and interfaces for high performance
 
 ## IMPORTANT
 
-TODO:
-> [!WARNING]
-> This is a template. This section contains actions you must perform to use this template properly
->
-> - Update README.md (this file)
->   - fill in each section with a TODO
->   - remove each TODO and its associated [!WARNING] block
->
-> - Update [.github/workflows/main.yml](.github/workflows/main.yml)
->   - Uncomment the `on: push` line to cause push-based CI builds to happen
->
-> - Update [.github/actions/benchmark/action.yml](.github/actions/benchmark/action.yml)
->   - Where `"--project", "<path to benchmark project>"` is specified, update to use the actual project name
->
-> - Remove this section
+> [!IMPORTANT]
+> This project is under active development. The interface contracts are not yet stable and breaking changes may occur before v1.0. See [Phase 1 plan](docs/plans/phase-1-interface-development.md) for current status.
 
 ## Features
 
-TODO:
-> [!WARNING]
-> This is a template. Update the feature list to describe the features the project provides
-> This should build on the description, providing more detail
-
-A list of features this project provides.
-
-- Feature 1: Description
-- Feature 2: Description
-- Feature 3: Description
+- **Engine-agnostic adapter contracts**: Interfaces for rendering, input, audio, UI, and asset management
+- **Minimal, allocation-friendly DTOs**: Compact structs for draw commands, transforms, and materials
+- **Capability negotiation**: Adapters advertise supported features (2D, 3D, audio, etc.) at runtime
+- **Extensible provider model**: Obtain engine-specific providers for rendering, input, UI, and assets
+- **Headless/test adapters**: Support for deterministic simulation and CI testing
 
 ## Roadmap
 
-TODO:
-> [!WARNING]
-> This is a template. Update the roadmap to describe the work in development, with links to
-> projects and issues
+- [Phase 1: Interface development](docs/plans/phase-1-interface-development.md) ([#2](https://github.com/JohnLudlow/GameEngineAdapter/issues/2))
+  - Define stable adapter contracts and DTOs
+  - Document interfaces and provide minimal working examples
+  - Add headless/test adapters for CI
+- Future: Engine-specific adapters (MonoGame, Stride, Raylib, etc.)
 
 ## Prerequisites
 
-TODO:
-> [!WARNING]
-> This is a template. Update the prerequites to describe what someone needs in order to use this
-> project.
->
-> This should be a comprehensive but concise list. It should list, for example, the version of .NET
-> that is required and provide a link, but it should not document in detail the installation process
-> as the dotnet project itself already does that.
-
-- [.NET SDK](https://dotnet.microsoft.com/download) version 10.0
-- Any other dependencies or tools required
+- [.NET SDK 10.0](https://dotnet.microsoft.com/download)
 
 ## Installation
-
-TODO:
-> [!WARNING]
-> This is a template. Update the installation instructions to describe what a user must do in order to
-> set up this project for use
->
-> This should build upon the prerequisites.
->
-> For projects with no installation, instruct the user to clone the repo, build and run tests
->
-> For library projects with a nuget package, instruct the user to add the package reference. Link to the
-> nuget package page which allows the user to copy the command or package syntax for different package
-> managers and package versions
->
-> For application projects and other projects with a release, instruct the user to download the release and
-> link to the releases page.
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/JohnLudlow/GameEngineAdapter.git
+   cd GameEngineAdapter
    ```
 
-2. Restore NuGet packages:
+2. Restore dependencies:
 
    ```bash
    dotnet restore
@@ -99,93 +59,48 @@ TODO:
 
 ## Usage
 
-TODO:
-> [!WARNING]
-> This is a template. Update to describe how a user can use this project
+This is a class library. Reference it from your engine adapter or game project:
 
-Provide examples of how to use the application or library. Include code snippets if applicable.
+```xml
+<ItemGroup>
+  <ProjectReference Include="../GameEngineAdapter/GameEngineAdapter.csproj" />
+</ItemGroup>
+```
 
-### Running the Application
+### Example: Implementing an Adapter
 
-TODO:
-> [!WARNING]
-> This is a template. Update to describe how a user can run the application
->
-> Remove this section if this is not an application project
+```csharp
+public class MyEngineAdapter : IEngineAdapter
+{
+    public EngineCapabilities Capabilities => new EngineCapabilities { Supports2D = true, ContractVersion = "1.0.0" };
+    public Task InitializeAsync(EngineConfig config, CancellationToken ct = default) => Task.CompletedTask;
+    public Task ShutdownAsync(CancellationToken ct = default) => Task.CompletedTask;
+    public IRenderProvider GetRenderProvider() => new MyRenderProvider();
+    // ...other providers
+    public void Dispose() { }
+}
+```
 
-   ```bash
-   dotnet run
-   ```
-
-### Using the Library
-
-TODO:
-> [!WARNING]
-> This is a template. Update to describe how a user can use this library
->
-> Include code snippets
->
-> Remove this section if this is not a library project
-
-   ```csharp
-   // code snippets
-   ```
+See [docs/plans/phase-1-interface-development.md](docs/plans/phase-1-interface-development.md) for more API examples.
 
 ## Configuration
 
-TODO:
-> [!WARNING]
-> This is a template. Update to describe how a user can configure the application or library
->
-> Include code snippets
->
-> Remove this section if there is no configuration
-
-If applicable, describe any configuration options or environment variables.
+Adapters may accept configuration via an `EngineConfig` object. See the plan for details. No global configuration is required for the library itself.
 
 ## Contributing
 
-TODO:
-> [!WARNING]
-> This is a template. Update to describe how a user can contribute to this library
->
-> Describe the procedures for
->
-> - raising issues
->   - bugs
->   - feature requests / suggestions
-> - forking / cloning the repo
-> - building
-> - running tests
->   - unit tests
->   - integration tests
->   - mutation / property tests
->   - benchmarks
-> - updating attributions
-> - running verification checks
-> - submitting PRs
+Contributions are welcome! Please:
 
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- [Open issues](https://github.com/JohnLudlow/GameEngineAdapter/issues) for bugs, feature requests, or questions
+- Fork the repo and create feature branches for your changes
+- Follow the [plan](docs/plans/phase-1-interface-development.md) for interface and adapter contributions
+- Add or update tests for new features
+- Submit a pull request with a clear description
 
 ## License
 
-TODO:
-> [!WARNING]
-> This is a template. Update if using a different license
-
-This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
-TODO:
-> [!WARNING]
-> This is a template. Update to match this repo
-
-- Project Link: [https://github.com/your-username/your-repo-name](https://github.com/your-username/your-repo-name)
-- Email: <your-email@example.com>
+- Project Link: [https://github.com/JohnLudlow/GameEngineAdapter](https://github.com/JohnLudlow/GameEngineAdapter)

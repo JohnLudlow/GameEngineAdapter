@@ -1,0 +1,6 @@
+root = false
+
+insert_final_newline = false
+
+[*.{cs,vb}]
+dotnet_diagnostic.CA1515.severity = none
