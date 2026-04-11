@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/GameEngineAdapter.UnitTests/GameEngineAdapter.UnitTests.csproj" />
     <Project Path="src/GameEngineAdapter/GameEngineAdapter.csproj" />
   </Folder>
 </Solution>

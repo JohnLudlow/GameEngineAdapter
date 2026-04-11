@@ -19,4 +19,4 @@ Use [GitVersion semver flags](https://gitversion.net/docs/reference/version-incr
 
 ## PR Size justification
 
-Justification for overriding pr-size.
+Justification for overriding pr-size, or delete if not required.
