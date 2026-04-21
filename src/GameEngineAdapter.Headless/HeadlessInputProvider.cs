@@ -3,7 +3,8 @@ namespace JohnLudlow.GameEngineAdapter.Headless;
 using JohnLudlow.GameEngineAdapter.Core;
 
 /// <summary>
-/// Simulates input via a queue of scripted events for deterministic playback.
+/// Simulates input by maintaining scripted state (keys held, buttons held, mouse position)
+/// for deterministic testing.
 /// </summary>
 public sealed class HeadlessInputProvider : IInputProvider
 {
@@ -12,25 +13,25 @@ public sealed class HeadlessInputProvider : IInputProvider
     private (float X, float Y) _mousePosition;
 
     /// <summary>
-    /// Enqueues a key-down event for the specified key.
+    /// Sets the specified key as held down.
     /// </summary>
     /// <param name="key">The key identifier.</param>
     public void ScriptKeyDown(string key) => _keysDown.Add(key);
 
     /// <summary>
-    /// Enqueues a key-up event for the specified key.
+    /// Releases the specified key.
     /// </summary>
     /// <param name="key">The key identifier.</param>
     public void ScriptKeyUp(string key) => _keysDown.Remove(key);
 
     /// <summary>
-    /// Enqueues a mouse button down event.
+    /// Sets the specified mouse button as held down.
     /// </summary>
     /// <param name="button">The mouse button index.</param>
     public void ScriptMouseButtonDown(int button) => _buttonsDown.Add(button);
 
     /// <summary>
-    /// Enqueues a mouse button up event.
+    /// Releases the specified mouse button.
     /// </summary>
     /// <param name="button">The mouse button index.</param>
     public void ScriptMouseButtonUp(int button) => _buttonsDown.Remove(button);
