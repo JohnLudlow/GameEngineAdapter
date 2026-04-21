@@ -9,7 +9,10 @@ public interface IRenderProvider
   /// Starts a new render frame with the specified camera configuration.
   /// </summary>
   /// <param name="camera">Camera configuration for the frame.</param>
-  /// <returns>A scope that finalizes the frame when disposed.</returns>
+  /// <returns>
+  /// A scope representing the active frame. Disposing this scope does not finalize or present the frame;
+  /// callers must explicitly invoke <see cref="EndFrame"/> and <see cref="Present"/>.
+  /// </returns>
   FrameScope BeginFrame(in CameraDescriptor camera);
 
   /// <summary>Submits a sprite for rendering.</summary>
