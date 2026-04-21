@@ -23,9 +23,9 @@ jobs:
       contents: write 
       pull-requests: write      
     outputs:
-      assemblySemVer: ${{ steps.version_step.outputs.assemblySemVer }}
-      GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
-      semVer: ${{ steps.version_step.outputs.semVer }}
+      assemblySemVer: ${{ steps.setup.outputs.assemblySemVer }}
+      GitVersion_FullSemVer: ${{ steps.setup.outputs.GitVersion_FullSemVer }}
+      semVer: ${{ steps.setup.outputs.semVer }}
       
     steps:
     - uses: actions/checkout@v5
@@ -45,6 +45,8 @@ jobs:
 
     - id: tag-commit
       uses: ./actions/steps/git/tag-commit
+      with:
+        version: ${{ steps.setup.outputs.GitVersion_FullSemVer }}
 
   unit-test:
     needs: build
@@ -68,22 +70,31 @@ jobs:
         assembly-semver: ${{ needs.build.outputs.assemblySemVer }}
         gitversion-full-semver: ${{ needs.build.outputs.GitVersion_FullSemVer }}
 
-  # benchmark:
-  #   needs: build
-  #   runs-on: windows-latest
-  #   env:
-  #     CONFIGURATION: Release
-  #   permissions:
-  #     contents: read
-  #     issues: write
+  benchmark:
+    needs: build
+    runs-on: windows-latest
+    env:
+      CONFIGURATION: Release
+    permissions:
+      contents: read
+      issues: write
+      actions: read
 
-  #   steps:
-  #   - uses: actions/checkout@v5
-  #     with:
-  #       lfs: true
-  #       fetch-depth: 0
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        lfs: true
+        fetch-depth: 0
+        submodules: recursive
 
-  #   - uses: ./actions/steps/benchmark
+    - uses: ./actions/steps/setup
+    - uses: ./actions/steps/benchmark
+      with:
+        configuration: ${{ env.CONFIGURATION }}
+        project: src/GameEngineAdapter.Benchmarks/GameEngineAdapter.Benchmarks.csproj
+        job: short
+        exporters: GitHub
+        filter: "*"
 
   lint:
     runs-on: windows-latest
