@@ -4,7 +4,7 @@ using JohnLudlow.GameEngineAdapter.Core;
 
 /// <summary>
 /// Simulates engine operations for headless, deterministic testing.
-/// Records all provider calls for verification.
+/// Exposes provider instances; individual providers may record their own calls for verification.
 /// </summary>
 public sealed class HeadlessAdapter : IEngineAdapter
 {
