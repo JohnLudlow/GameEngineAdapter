@@ -3,5 +3,6 @@
     <Project Path="src/GameEngineAdapter.Headless/GameEngineAdapter.Headless.csproj" />
     <Project Path="src/GameEngineAdapter.UnitTests/GameEngineAdapter.UnitTests.csproj" />
     <Project Path="src/GameEngineAdapter.Core/GameEngineAdapter.Core.csproj" />
+    <Project Path="src/GameEngineAdapter.Benchmarks/GameEngineAdapter.Benchmarks.csproj" />
   </Folder>
 </Solution>
