@@ -20,7 +20,9 @@ public class DeterministicEngineRunnerTests
         runner.Run(0);
 
         // Assert
-        Assert.Empty(renderProvider.RecordedCommands);
+        Assert.Empty(renderProvider.RecordedSprites);
+        Assert.Empty(renderProvider.RecordedTexts);
+        Assert.Empty(renderProvider.RecordedMeshes);
     }
 
     [Fact]

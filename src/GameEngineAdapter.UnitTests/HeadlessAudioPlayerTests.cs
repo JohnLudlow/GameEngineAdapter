@@ -52,7 +52,7 @@ public class HeadlessAudioPlayerTests
         var player = new HeadlessAudioPlayer();
 
         // Act
-        player.StopPlayBack("music_main");
+        player.StopPlayback("music_main");
 
         // Assert
         Assert.Single(player.RecordedCalls);
@@ -88,7 +88,7 @@ public class HeadlessAudioPlayerTests
         // Act
         player.StartPlayback("sfx_jump");
         player.SetVolume("sfx_jump", 0.8f);
-        player.StopPlayBack("sfx_jump");
+        player.StopPlayback("sfx_jump");
 
         // Assert
         Assert.Equal(3, player.RecordedCalls.Count);
@@ -103,7 +103,7 @@ public class HeadlessAudioPlayerTests
         // Arrange
         var player = new HeadlessAudioPlayer();
         player.StartPlayback("sfx_a");
-        player.StopPlayBack("sfx_b");
+        player.StopPlayback("sfx_b");
 
         // Act
         player.Clear();

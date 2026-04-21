@@ -19,7 +19,7 @@ public sealed class HeadlessAudioPlayer : IAudioPlayer
         _recordedCalls.Add(("Play", audioAssetId, loopPlayback));
 
     /// <inheritdoc />
-    public void StopPlayBack(string audioAssetId) =>
+    public void StopPlayback(string audioAssetId) =>
         _recordedCalls.Add(("Stop", audioAssetId, null));
 
     /// <inheritdoc />

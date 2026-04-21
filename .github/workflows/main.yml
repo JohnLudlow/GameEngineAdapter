@@ -23,9 +23,9 @@ jobs:
       contents: write 
       pull-requests: write      
     outputs:
-      assemblySemVer: ${{ steps.version_step.outputs.assemblySemVer }}
-      GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
-      semVer: ${{ steps.version_step.outputs.semVer }}
+      assemblySemVer: ${{ steps.setup.outputs.assemblySemVer }}
+      GitVersion_FullSemVer: ${{ steps.setup.outputs.GitVersion_FullSemVer }}
+      semVer: ${{ steps.setup.outputs.semVer }}
       
     steps:
     - uses: actions/checkout@v5

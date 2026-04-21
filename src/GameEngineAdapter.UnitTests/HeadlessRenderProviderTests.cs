@@ -22,7 +22,9 @@ public class HeadlessRenderProviderTests
         var provider = new HeadlessRenderProvider();
 
         // Assert
-        Assert.Empty(provider.RecordedCommands);
+        Assert.Empty(provider.RecordedSprites);
+        Assert.Empty(provider.RecordedTexts);
+        Assert.Empty(provider.RecordedMeshes);
     }
 
     [Fact]
@@ -36,8 +38,8 @@ public class HeadlessRenderProviderTests
         provider.SubmitSprite(dto);
 
         // Assert
-        Assert.Single(provider.RecordedCommands);
-        Assert.Equal(dto, provider.RecordedCommands[0]);
+        Assert.Single(provider.RecordedSprites);
+        Assert.Equal(dto, provider.RecordedSprites[0]);
     }
 
     [Fact]
@@ -51,8 +53,8 @@ public class HeadlessRenderProviderTests
         provider.SubmitText(dto);
 
         // Assert
-        Assert.Single(provider.RecordedCommands);
-        Assert.Equal(dto, provider.RecordedCommands[0]);
+        Assert.Single(provider.RecordedTexts);
+        Assert.Equal(dto, provider.RecordedTexts[0]);
     }
 
     [Fact]
@@ -66,8 +68,8 @@ public class HeadlessRenderProviderTests
         provider.SubmitMesh(dto);
 
         // Assert
-        Assert.Single(provider.RecordedCommands);
-        Assert.Equal(dto, provider.RecordedCommands[0]);
+        Assert.Single(provider.RecordedMeshes);
+        Assert.Equal(dto, provider.RecordedMeshes[0]);
     }
 
     [Fact]
@@ -82,7 +84,9 @@ public class HeadlessRenderProviderTests
         provider.SubmitText(new TextDrawDto("Hi", MakeTransform(), "f", 10f, MakeMaterial(), 2));
 
         // Assert
-        Assert.Equal(3, provider.RecordedCommands.Count);
+        Assert.Equal(2, provider.RecordedSprites.Count);
+        Assert.Single(provider.RecordedTexts);
+        Assert.Empty(provider.RecordedMeshes);
     }
 
     [Fact]
@@ -97,7 +101,9 @@ public class HeadlessRenderProviderTests
         provider.Clear();
 
         // Assert
-        Assert.Empty(provider.RecordedCommands);
+        Assert.Empty(provider.RecordedSprites);
+        Assert.Empty(provider.RecordedTexts);
+        Assert.Empty(provider.RecordedMeshes);
     }
 
     [Fact]

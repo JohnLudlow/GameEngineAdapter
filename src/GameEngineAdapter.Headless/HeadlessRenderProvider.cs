@@ -7,22 +7,30 @@ namespace JohnLudlow.GameEngineAdapter.Headless;
 /// </summary>
 public sealed class HeadlessRenderProvider : IRenderProvider
 {
-    private readonly List<object> _recordedCommands = [];
+    private readonly List<SpriteDrawDto> _recordedSprites = [];
+    private readonly List<TextDrawDto> _recordedTexts = [];
+    private readonly List<MeshDrawDto> _recordedMeshes = [];
 
-    /// <summary>Gets the list of recorded render commands.</summary>
-    public IReadOnlyList<object> RecordedCommands => _recordedCommands;
+    /// <summary>Gets the list of recorded sprite draw commands.</summary>
+    public IReadOnlyList<SpriteDrawDto> RecordedSprites => _recordedSprites;
+
+    /// <summary>Gets the list of recorded text draw commands.</summary>
+    public IReadOnlyList<TextDrawDto> RecordedTexts => _recordedTexts;
+
+    /// <summary>Gets the list of recorded mesh draw commands.</summary>
+    public IReadOnlyList<MeshDrawDto> RecordedMeshes => _recordedMeshes;
 
     /// <inheritdoc />
     public FrameScope BeginFrame(in CameraDescriptor camera) => new();
 
     /// <inheritdoc />
-    public void SubmitSprite(in SpriteDrawDto dto) => _recordedCommands.Add(dto);
+    public void SubmitSprite(in SpriteDrawDto dto) => _recordedSprites.Add(dto);
 
     /// <inheritdoc />
-    public void SubmitText(in TextDrawDto dto) => _recordedCommands.Add(dto);
+    public void SubmitText(in TextDrawDto dto) => _recordedTexts.Add(dto);
 
     /// <inheritdoc />
-    public void SubmitMesh(in MeshDrawDto dto) => _recordedCommands.Add(dto);
+    public void SubmitMesh(in MeshDrawDto dto) => _recordedMeshes.Add(dto);
 
     /// <inheritdoc />
     public void EndFrame() { }
@@ -31,5 +39,10 @@ public sealed class HeadlessRenderProvider : IRenderProvider
     public void Present() { }
 
     /// <summary>Clears all recorded commands.</summary>
-    public void Clear() => _recordedCommands.Clear();
+    public void Clear()
+    {
+        _recordedSprites.Clear();
+        _recordedTexts.Clear();
+        _recordedMeshes.Clear();
+    }
 }
