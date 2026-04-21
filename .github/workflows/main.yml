@@ -45,6 +45,8 @@ jobs:
 
     - id: tag-commit
       uses: ./actions/steps/git/tag-commit
+      with:
+        version: ${{ steps.setup.outputs.GitVersion_FullSemVer }}
 
   unit-test:
     needs: build
