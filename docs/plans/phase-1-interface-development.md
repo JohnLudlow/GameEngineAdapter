@@ -34,7 +34,7 @@ Phase 1 defines the stable adapter contracts and DTO shapes used by all adapters
 
 ## Plan status
 
-Complete
+Complete (interfaces and DTOs implemented)
 
 ## Definition of terms
 
@@ -79,9 +79,11 @@ Define stable adapter contracts and DTO shapes. Produce small, well-documented C
 - Define `IAudioPlayer` (play/stop/volume, audio asset references), `IAssetProvider` for asset caching and lifecycle management (unload, query, cache eviction), and `IAssetLoader` for loading assets from storage into the asset provider.
 - Provide capability descriptor model (`EngineCapabilities`) returned at adapter init and allow specific engine capability variants (e.g. `HeadlessEngineCapabilities`) to derive from the base capabilities.
 
-#### Missing type definitions
+#### Type definitions
 
-The following types are referenced by existing interfaces but do not yet have source files. They must be created in `src/GameEngineAdapter/` under the `JohnLudlow.GameEngineAdapter.Core` namespace, following the `readonly record struct` and single-file-per-type conventions.
+The types listed below were originally referenced by the contracts before the Core project was fully fleshed out. They are now implemented under `src/GameEngineAdapter.Core/` (one file per type) in the `JohnLudlow.GameEngineAdapter.Core` namespace.
+
+The snippets are retained as illustrative examples; prefer the source files as the canonical definitions.
 
 ##### EngineConfig
 
@@ -284,7 +286,8 @@ public interface IAssetLoader
 - (***Complete***) Adapter lifecycle & capability negotiation
   - GIVEN adapters are present at startup
   - WHEN the game queries capabilities
-  - THEN `IEngineAdapter` returns `EngineCapabilities` and exposes `Initialize`/`Shutdown` semantics and diagnostics for mismatches.
+  - THEN `IEngineAdapter` returns `EngineCapabilities` and exposes `Initialize`/`Shutdown` semantics.
+  - Note: contract mismatch diagnostics are not yet implemented in this repository.
 
 #### Examples
 
@@ -460,7 +463,7 @@ public readonly record struct MaterialDto(
 
 - Unit tests: provide small translator tests that map DTOs to engine calls using fakes.
 - Integration tests: use `HeadlessAdapter` and `TestAdapter` with recorded traces to verify behaviour.
-- Compatibility: version `IEngineAdapter` via a `ContractVersion` in `EngineCapabilities`; adapters must detect mismatches and fail with actionable diagnostics.
+- Compatibility: version `IEngineAdapter` via `EngineCapabilities.ContractVersion`. This repository does not yet provide a central contract validator; hosts/adapters should compare versions and fail fast with actionable diagnostics.
 
 ### Performance targets
 
