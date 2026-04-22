@@ -16,15 +16,15 @@ public sealed class HeadlessAudioPlayer : IAudioPlayer
 
     /// <inheritdoc />
     public void StartPlayback(string audioAssetId, bool loopPlayback = false) =>
-        _recordedCalls.Add(("Play", audioAssetId, loopPlayback));
+        _recordedCalls.Add((nameof(StartPlayback), audioAssetId, loopPlayback));
 
     /// <inheritdoc />
     public void StopPlayback(string audioAssetId) =>
-        _recordedCalls.Add(("Stop", audioAssetId, null));
+        _recordedCalls.Add((nameof(StopPlayback), audioAssetId, null));
 
     /// <inheritdoc />
     public void SetVolume(string audioAssetId, float volume) =>
-        _recordedCalls.Add(("SetVolume", audioAssetId, volume));
+        _recordedCalls.Add((nameof(SetVolume), audioAssetId, volume));
 
     /// <summary>Clears all recorded calls.</summary>
     public void Clear() => _recordedCalls.Clear();
