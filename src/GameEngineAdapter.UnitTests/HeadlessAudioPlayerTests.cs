@@ -26,7 +26,7 @@ public class HeadlessAudioPlayerTests
         // Assert
         Assert.Single(player.RecordedCalls);
         var call = player.RecordedCalls[0];
-        Assert.Equal("Play", call.Method);
+        Assert.Equal(nameof(player.StartPlayback), call.Method);
         Assert.Equal("music_main", call.AudioAssetId);
         Assert.Equal(true, call.Arg);
     }
@@ -57,7 +57,7 @@ public class HeadlessAudioPlayerTests
         // Assert
         Assert.Single(player.RecordedCalls);
         var call = player.RecordedCalls[0];
-        Assert.Equal("Stop", call.Method);
+        Assert.Equal(nameof(player.StopPlayback), call.Method);
         Assert.Equal("music_main", call.AudioAssetId);
         Assert.Null(call.Arg);
     }
@@ -74,7 +74,7 @@ public class HeadlessAudioPlayerTests
         // Assert
         Assert.Single(player.RecordedCalls);
         var call = player.RecordedCalls[0];
-        Assert.Equal("SetVolume", call.Method);
+        Assert.Equal(nameof(player.SetVolume), call.Method);
         Assert.Equal("music_main", call.AudioAssetId);
         Assert.Equal(0.5f, call.Arg);
     }
@@ -92,9 +92,9 @@ public class HeadlessAudioPlayerTests
 
         // Assert
         Assert.Equal(3, player.RecordedCalls.Count);
-        Assert.Equal("Play", player.RecordedCalls[0].Method);
-        Assert.Equal("SetVolume", player.RecordedCalls[1].Method);
-        Assert.Equal("Stop", player.RecordedCalls[2].Method);
+        Assert.Equal(nameof(player.StartPlayback), player.RecordedCalls[0].Method);
+        Assert.Equal(nameof(player.SetVolume), player.RecordedCalls[1].Method);
+        Assert.Equal(nameof(player.StopPlayback), player.RecordedCalls[2].Method);
     }
 
     [Fact]
