@@ -1,0 +1,112 @@
+name: Feature Request
+description: Request a new feature for the GameEngineAdapter
+title: "[Feature]: "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please fill out the following sections to help us understand and evaluate your request.
+  
+  - type: input
+    id: overview
+    attributes:
+      label: Overview
+      description: Detailed description of the feature including purpose and intent as well as intended use cases
+      placeholder: Enter a clear and concise description of what the feature should do
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition-of-terms
+    attributes:
+      label: Definition of Terms
+      description: Detailed table of terms not considered 'common English' related to this feature
+      placeholder: |
+        | Term | Meaning | Reference |
+        | ---- | ------- | --------- |
+        |      |         |           |
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: architectural-considerations
+    attributes:
+      label: Architectural Considerations and Constraints
+      description: Detailed model of the feature's architectural consideration and flow of data within the system
+      placeholder: |
+        - Include constraints such as performance considerations or affected components
+        - Include ASCII-art or mermaid diagrams where appropriate
+        - Include KaTeX math where relevant, with plain-English explanations
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: implementation-guide
+    attributes:
+      label: Implementation Guide
+      description: Detailed step-by-step implementation guide for this feature, including code snippets, unit tests and benchmarks
+      placeholder: |
+        If requested, write steps to follow Test Driven Development principles, leading with a minimal breaking test, followed by a minimal change to fix the test, followed by refactor, repeating until the feature is complete.
+        
+        If the feature is extensive and complex, create multiple subsections to make these steps more legible.
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: plan-requirements
+    attributes:
+      label: Plan Requirements
+      description: Detailed description of the feature and its requirements
+      placeholder: |
+        A list of plan-level requirements in Given/When/Then syntax.
+        
+        If a feature is considered complete then indicate with a ***COMPLETE*** prefix.
+        
+        ```markdown
+        - (***requirement status***) Requirement descriptive text
+          - GIVEN a precondition
+          - WHEN an event happens
+          - THEN an action is taken / a result property is true
+          
+          > Details of missing implementation / link to phase with missing implementation
+        ```
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: related-plan-docs
+    attributes:
+      label: Related Plan Documentation
+      description: Link to related plan documentation files in the repository
+      placeholder: |
+        If this issue is part of a larger plan, link to the related documentation:
+        
+        - Parent plan: `docs/plans/<parent-plan>.md` - Overall plan this issue is part of
+        - Related plans: `docs/plans/<related-plan>.md` - Related work or dependent plans
+        
+        For complex features, corresponding detailed documentation may exist in:
+        - `docs/plans/<feature-area>/` - Folder containing detailed planning documents
+          - `docs/plans/<feature-area>/<topic>.md` - Specific topic documentation
+        
+        Reference the existing plan structure when linking related documentation.
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: A list of links to external resources such as library documentation or articles about relevant techniques
+      placeholder: |
+        - Link 1
+        - Link 2
+      render: markdown
+    validations:
+      required: false

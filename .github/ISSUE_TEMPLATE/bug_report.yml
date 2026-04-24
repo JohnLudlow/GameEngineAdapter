@@ -1,0 +1,87 @@
+name: Bug Report
+description: Report a bug or issue in the GameEngineAdapter
+title: "[Bug]: "
+labels: ["bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the following sections to help us investigate and understand the issue.
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is
+      placeholder: Describe the bug in detail
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behaviour
+    attributes:
+      label: Expected Behaviour
+      description: What you expected to happen
+      placeholder: Describe what should happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behaviour
+    attributes:
+      label: Actual Behaviour
+      description: What actually happened instead
+      placeholder: Describe what actually happens
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behaviour
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Details about your environment
+      placeholder: |
+        - .NET SDK version: 
+        - OS: 
+        - Adapter/Engine: 
+        - Any other relevant details:
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: error-logs
+    attributes:
+      label: Error Logs or Stack Trace
+      description: Any error messages or stack traces
+      placeholder: |
+        ```
+        Paste error logs or stack trace here
+        ```
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context or screenshots that might help
+      placeholder: Add any other context here
+      render: markdown
+    validations:
+      required: false
