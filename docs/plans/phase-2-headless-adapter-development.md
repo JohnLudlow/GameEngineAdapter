@@ -87,11 +87,11 @@ Implement a `HeadlessAdapter` and its providers that simulate all engine operati
 #### Technical details
 
 - **HeadlessAdapter**: Implements `IEngineAdapter`. Composes headless providers for rendering, input, UI, assets, and audio. Currently returns `EngineCapabilities` (including `ContractVersion`) from the `Capabilities` property.
-- **HeadlessRenderProvider**: Implements `IRenderProvider`. Records all render commands (`SubmitSprite`, `SubmitText`, `SubmitMesh`) to an in-memory list for later inspection. `BeginFrame` returns a `FrameScope`; `EndFrame` and `Present` are no-ops.
+- **HeadlessRenderProvider**: Implements `IRenderProvider`. Records all render commands (`SubmitSprite`, `SubmitText`, `SubmitMesh`) to separate typed lists per draw type (`RecordedSprites`, `RecordedTexts`, `RecordedMeshes`) for later inspection. `BeginFrame` returns a `FrameScope`; `EndFrame` and `Present` are no-ops.
 - **HeadlessInputProvider**: Implements `IInputProvider`. Provides deterministic, scriptable input state via methods such as `ScriptKeyDown`, `ScriptKeyUp`, and `ScriptMousePosition`.
 - **HeadlessUserInterfaceProvider**: Implements `IUserInterfaceProvider`. Currently empty (pending final UI provider contract).
 - **HeadlessAssetProvider**: Implements `IAssetProvider`. Manages asset cache and lifecycle state in memory without actual file or resource access. Composes a `HeadlessAssetLoader` (implementing `IAssetLoader`) that returns stub assets for any requested identifier.
-- **HeadlessAudioPlayer**: Implements `IAudioPlayer`. Records calls (`Play`, `Stop`, `SetVolume`) for test assertion.
+- **HeadlessAudioPlayer**: Implements `IAudioPlayer`. Records calls (`StartPlayback`, `StopPlayback`, `SetVolume`) for test assertion.
 
 #### Phase requirements
 
@@ -119,7 +119,7 @@ using JohnLudlow.GameEngineAdapter.Core;
 
 /// <summary>
 /// Simulates engine operations for headless, deterministic testing.
-/// Records all provider calls for verification.
+/// Exposes provider instances; individual providers may record their own calls for verification.
 /// </summary>
 public sealed class HeadlessAdapter : IEngineAdapter
 {
@@ -182,40 +182,31 @@ public sealed class HeadlessAdapter : IEngineAdapter
 ```
 
 ```csharp
-namespace JohnLudlow.GameEngineAdapter.Headless;
+// src/GameEngineAdapter.Headless/HeadlessRenderProvider.cs
 
-using JohnLudlow.GameEngineAdapter.Core;
-
-/// <summary>
-/// Records render commands for verification without GPU interaction.
-/// </summary>
 public sealed class HeadlessRenderProvider : IRenderProvider
 {
-    private readonly List<object> _recordedCommands = [];
+    private readonly List<SpriteDrawDto> _recordedSprites = [];
+    private readonly List<TextDrawDto> _recordedTexts = [];
+    private readonly List<MeshDrawDto> _recordedMeshes = [];
 
-    /// <summary>Gets the list of recorded render commands.</summary>
-    public IReadOnlyList<object> RecordedCommands => _recordedCommands;
+    public IReadOnlyList<SpriteDrawDto> RecordedSprites => _recordedSprites;
+    public IReadOnlyList<TextDrawDto> RecordedTexts => _recordedTexts;
+    public IReadOnlyList<MeshDrawDto> RecordedMeshes => _recordedMeshes;
 
-    /// <inheritdoc />
     public FrameScope BeginFrame(in CameraDescriptor camera) => new();
-
-    /// <inheritdoc />
-    public void SubmitSprite(in SpriteDrawDto dto) => _recordedCommands.Add(dto);
-
-    /// <inheritdoc />
-    public void SubmitText(in TextDrawDto dto) => _recordedCommands.Add(dto);
-
-    /// <inheritdoc />
-    public void SubmitMesh(in MeshDrawDto dto) => _recordedCommands.Add(dto);
-
-    /// <inheritdoc />
+    public void SubmitSprite(in SpriteDrawDto dto) => _recordedSprites.Add(dto);
+    public void SubmitText(in TextDrawDto dto) => _recordedTexts.Add(dto);
+    public void SubmitMesh(in MeshDrawDto dto) => _recordedMeshes.Add(dto);
     public void EndFrame() { }
-
-    /// <inheritdoc />
     public void Present() { }
 
-    /// <summary>Clears all recorded commands.</summary>
-    public void Clear() => _recordedCommands.Clear();
+    public void Clear()
+    {
+        _recordedSprites.Clear();
+        _recordedTexts.Clear();
+        _recordedMeshes.Clear();
+    }
 }
 ```
 
