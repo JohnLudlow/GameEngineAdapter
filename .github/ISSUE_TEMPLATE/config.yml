@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GameEngineAdapter Documentation
+    url: https://github.com/JohnLudlow/GameEngineAdapter/blob/main/README.md
+    about: Please check the documentation for questions about how to use the library.
+  - name: Discussion Forum
+    url: https://github.com/JohnLudlow/GameEngineAdapter/discussions
+    about: Ask and answer questions about the GameEngineAdapter.
