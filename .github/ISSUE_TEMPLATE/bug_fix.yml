@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report a bug! Please fill out the following sections to help us investigate and fix the issue.
+        Thanks for taking the time to plan and track a bug fix! Please fill out the following sections to document the implementation approach, requirements, and supporting details.
   
   - type: input
     id: overview
