@@ -22,7 +22,7 @@ body:
     id: definition-of-terms
     attributes:
       label: Definition of Terms
-      description: Detailed table of terms not considered 'common english' related to this feature
+      description: Detailed table of terms not considered 'common English' related to this feature
       placeholder: |
         | Term | Meaning | Reference |
         | ---- | ------- | --------- |
