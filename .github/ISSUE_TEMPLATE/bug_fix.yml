@@ -22,7 +22,7 @@ body:
     id: definition-of-terms
     attributes:
       label: Definition of Terms
-      description: Detailed table of terms not considered 'common english' related to this bug
+      description: Detailed table of terms not considered 'common English' related to this bug
       placeholder: |
         | Term | Meaning | Reference |
         | ---- | ------- | --------- |
