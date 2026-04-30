@@ -1,6 +1,5 @@
 namespace JohnLudlow.GameEngineAdapter.Headless;
 
-using System.Collections.ObjectModel;
 using JohnLudlow.GameEngineAdapter.Core;
 
 /// <summary>

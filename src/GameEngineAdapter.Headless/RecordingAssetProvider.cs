@@ -1,6 +1,5 @@
 namespace JohnLudlow.GameEngineAdapter.Headless;
 
-using System.Collections.ObjectModel;
 using JohnLudlow.GameEngineAdapter.Core;
 
 /// <summary>
@@ -28,9 +27,8 @@ public sealed class RecordingAssetProvider : IAssetProvider
     /// <inheritdoc />
     public object? GetAsset(string assetId)
     {
-        var result = _inner.GetAsset(assetId);
-        _recordedCalls.Add(new RecordedCall("Asset", "GetAsset", [assetId, result]));
-        return result;
+        _recordedCalls.Add(new RecordedCall("Asset", "GetAsset", [assetId]));
+        return _inner.GetAsset(assetId);
     }
 
     /// <inheritdoc />
@@ -43,9 +41,8 @@ public sealed class RecordingAssetProvider : IAssetProvider
     /// <inheritdoc />
     public bool IsAssetLoaded(string assetId)
     {
-        var result = _inner.IsAssetLoaded(assetId);
-        _recordedCalls.Add(new RecordedCall("Asset", "IsAssetLoaded", [assetId, result]));
-        return result;
+        _recordedCalls.Add(new RecordedCall("Asset", "IsAssetLoaded", [assetId]));
+        return _inner.IsAssetLoaded(assetId);
     }
 
     /// <inheritdoc />
