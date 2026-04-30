@@ -2,42 +2,37 @@ namespace JohnLudlow.GameEngineAdapter.Headless;
 
 using JohnLudlow.GameEngineAdapter.Core;
 
-/// <summary>
-/// Adapter for CI that wraps HeadlessAdapter and records all calls for assertion.
-/// </summary>
 public sealed class TestAdapter : IEngineAdapter
 {
     private readonly HeadlessAdapter _inner;
     private readonly List<RecordedCall> _recordedCalls = [];
 
-    /// <summary>Gets the recorded calls for assertion.</summary>
+    private readonly RecordingRenderProvider _renderProvider;
+    private readonly RecordingInputProvider _inputProvider;
+    private readonly RecordingAssetProvider _assetProvider;
+    private readonly RecordingAudioPlayer _audioPlayer;
+
     public IReadOnlyList<RecordedCall> RecordedCalls => _recordedCalls;
 
-    /// <inheritdoc />
     public EngineCapabilities Capabilities => _inner.Capabilities;
 
-    /// <inheritdoc />
-    public IRenderProvider RenderProvider => _inner.RenderProvider;
+    public IRenderProvider RenderProvider => _renderProvider;
 
-    /// <inheritdoc />
-    public IInputProvider InputProvider => _inner.InputProvider;
+    public IInputProvider InputProvider => _inputProvider;
 
-    /// <inheritdoc />
     public IUserInterfaceProvider UserInterfaceProvider => _inner.UserInterfaceProvider;
 
-    /// <inheritdoc />
-    public IAssetProvider AssetProvider => _inner.AssetProvider;
+    public IAssetProvider AssetProvider => _assetProvider;
 
-    /// <inheritdoc />
-    public IAudioPlayer AudioPlayer => _inner.AudioPlayer;
+    public IAudioPlayer AudioPlayer => _audioPlayer;
 
-    /// <summary>
-    /// Initializes a new test adapter wrapping a headless adapter.
-    /// </summary>
-    /// <param name="config">Adapter configuration.</param>
     public TestAdapter(EngineConfig config)
     {
         _inner = new HeadlessAdapter(config);
+        _renderProvider = new RecordingRenderProvider(_inner.RenderProvider, _recordedCalls);
+        _inputProvider = new RecordingInputProvider(_inner.InputProvider, _recordedCalls);
+        _assetProvider = new RecordingAssetProvider(_inner.AssetProvider, _recordedCalls);
+        _audioPlayer = new RecordingAudioPlayer(_inner.AudioPlayer, _recordedCalls);
     }
 
     /// <inheritdoc />
