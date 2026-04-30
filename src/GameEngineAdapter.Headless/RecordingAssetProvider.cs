@@ -16,10 +16,10 @@ public sealed class RecordingAssetProvider : IAssetProvider
     /// </summary>
     /// <param name="inner">The underlying asset provider to wrap.</param>
     /// <param name="recordedCalls">The list to record method calls into.</param>
-    public RecordingAssetProvider(IAssetProvider inner, IReadOnlyList<RecordedCall> recordedCalls)
+    public RecordingAssetProvider(IAssetProvider inner, IList<RecordedCall> recordedCalls)
     {
         _inner = inner;
-        _recordedCalls = (IList<RecordedCall>)recordedCalls;
+        _recordedCalls = recordedCalls;
     }
 
     /// <inheritdoc />

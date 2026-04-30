@@ -16,10 +16,10 @@ public sealed class RecordingInputProvider : IInputProvider
     /// </summary>
     /// <param name="inner">The underlying input provider to wrap.</param>
     /// <param name="recordedCalls">The list to record method calls into.</param>
-    public RecordingInputProvider(IInputProvider inner, IReadOnlyList<RecordedCall> recordedCalls)
+    public RecordingInputProvider(IInputProvider inner, IList<RecordedCall> recordedCalls)
     {
         _inner = inner;
-        _recordedCalls = (IList<RecordedCall>)recordedCalls;
+        _recordedCalls = recordedCalls;
     }
 
     /// <inheritdoc />

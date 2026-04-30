@@ -1,9 +1,5 @@
 namespace JohnLudlow.GameEngineAdapter.Headless;
 
-using System.Collections.ObjectModel;
-using JohnLudlow.GameEngineAdapter.Core;
-
-using System.Collections.ObjectModel;
 using JohnLudlow.GameEngineAdapter.Core;
 
 /// <summary>
@@ -19,10 +15,10 @@ public sealed class RecordingRenderProvider : IRenderProvider
     /// </summary>
     /// <param name="inner">The underlying render provider to wrap.</param>
     /// <param name="recordedCalls">The list to record method calls into.</param>
-    public RecordingRenderProvider(IRenderProvider inner, IReadOnlyList<RecordedCall> recordedCalls)
+    public RecordingRenderProvider(IRenderProvider inner, IList<RecordedCall> recordedCalls)
     {
         _inner = inner;
-        _recordedCalls = (IList<RecordedCall>)recordedCalls;
+        _recordedCalls = recordedCalls;
     }
 
     /// <inheritdoc />
