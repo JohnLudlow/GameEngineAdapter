@@ -1,6 +1,5 @@
 namespace JohnLudlow.GameEngineAdapter.Headless;
 
-using System.Collections.ObjectModel;
 using JohnLudlow.GameEngineAdapter.Core;
 
 /// <summary>
@@ -25,24 +24,21 @@ public sealed class RecordingInputProvider : IInputProvider
     /// <inheritdoc />
     public bool IsKeyDown(string key)
     {
-        var result = _inner.IsKeyDown(key);
-        _recordedCalls.Add(new RecordedCall("Input", "IsKeyDown", [key, result]));
-        return result;
+        _recordedCalls.Add(new RecordedCall("Input", "IsKeyDown", [key]));
+        return _inner.IsKeyDown(key);
     }
 
     /// <inheritdoc />
     public bool IsMouseButtonDown(int button)
     {
-        var result = _inner.IsMouseButtonDown(button);
-        _recordedCalls.Add(new RecordedCall("Input", "IsMouseButtonDown", [button, result]));
-        return result;
+        _recordedCalls.Add(new RecordedCall("Input", "IsMouseButtonDown", [button]));
+        return _inner.IsMouseButtonDown(button);
     }
 
     /// <inheritdoc />
     public (float X, float Y) GetMousePosition()
     {
-        var result = _inner.GetMousePosition();
-        _recordedCalls.Add(new RecordedCall("Input", "GetMousePosition", [result.X, result.Y]));
-        return result;
+        _recordedCalls.Add(new RecordedCall("Input", "GetMousePosition", []));
+        return _inner.GetMousePosition();
     }
 }
