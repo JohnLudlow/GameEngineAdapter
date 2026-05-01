@@ -79,7 +79,7 @@ public class DeterministicEngineRunnerTests
         runner.Run(3);
     }
 
-    // Phase 1 tests - will fail until DeterministicTickContext is implemented
+    // Construction/accessor coverage for DeterministicTickContext
     [Fact]
     public void DeterministicTickContext_CanBeConstructedWithAllParameters()
     {

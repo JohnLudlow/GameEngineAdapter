@@ -4,7 +4,7 @@ namespace JohnLudlow.GameEngineAdapter.Headless;
 /// Per-step context provided to the tick callback in a deterministic simulation run.
 /// </summary>
 /// <param name="SimulationTime">
-/// Simulated time at the start of this step. Accumulates across multiple <see cref="DeterministicEngineRunner.Run(int, System.Action{DeterministicTickContext}?)"/> calls.
+/// Simulated time at the start of this step.
 /// </param>
 /// <param name="Rng">
 /// Seeded random number generator for deterministic outputs. Shared with the runner; calls consume the sequence.
