@@ -78,4 +78,22 @@ public class DeterministicEngineRunnerTests
         runner.Run(2);
         runner.Run(3);
     }
+
+    // Construction/accessor coverage for DeterministicTickContext
+    [Fact]
+    public void DeterministicTickContext_CanBeConstructedWithAllParameters()
+    {
+        // Arrange
+        using var adapter = new HeadlessAdapter(MakeConfig());
+        var simulationTime = TimeSpan.FromMilliseconds(16);
+        var rng = new Random(42);
+
+        // Act - create the context
+        var ctx = new DeterministicTickContext(simulationTime, rng, adapter);
+
+        // Assert - properties are accessible
+        Assert.Equal(simulationTime, ctx.SimulationTime);
+        Assert.Same(rng, ctx.Rng);
+        Assert.Same(adapter, ctx.Adapter);
+    }
 }
