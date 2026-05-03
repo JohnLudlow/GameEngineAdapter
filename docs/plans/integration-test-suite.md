@@ -56,7 +56,9 @@ enhancements; Phases 1–3 cover the three domain scenarios.
 
 ## Plan status
 
-Not started
+Complete
+
+Implemented on branch `16-integration-test-suite-for-ai-combat-and-map-generation-scenarios-no-plan-yet` across commits `1d97689`, `b38948b`, `375d5f6`, `a81a687`, with the `Random`-rename refinements in `25caca2` and `f936c1a`. All 132 tests in `GameEngineAdapter.UnitTests` pass.
 
 ## Definition of terms
 
@@ -108,29 +110,29 @@ Phase 0  ──► Phase 1 (AI)
 
 ### Plan requirements
 
-- (***Not started***) AI scenario produces stable, assertable render output
+- (***Complete***) AI scenario produces stable, assertable render output
   - GIVEN a `DeterministicEngineRunner` with seed 42 and a 16 ms timestep
   - WHEN an NPC decision loop runs for 60 steps via the tick callback
   - THEN the recorded sprite submissions are identical between two runs with the same seed
 
-- (***Not started***) Combat scenario audio event sequence is deterministic
+- (***Complete***) Combat scenario audio event sequence is deterministic
   - GIVEN a `TestAdapter` with `DeterministicEngineRunner` seed 1337
   - WHEN a combat event script runs for 10 steps
   - THEN `RecordedCalls` contains the expected audio and render entries in the correct order
 
-- (***Not started***) Map generation scenario produces stable mesh output
+- (***Complete***) Map generation scenario produces stable mesh output
   - GIVEN a `DeterministicEngineRunner` with seed 0 and 100 steps
   - WHEN 10 mesh draw commands are submitted per tick
   - THEN the total recorded mesh count is 1000 and the content is identical between two runs
 
-- (***Not started***) All integration scenarios run in CI without native dependencies
+- (***Complete***) All integration scenarios run in CI without native dependencies
   - GIVEN the GitHub Actions workflow
   - WHEN `dotnet test` runs the `GameEngineAdapter.UnitTests` project
   - THEN all `*IntegrationTests.cs` scenarios pass with no platform-specific setup
 
 ### Phase 0 — DeterministicEngineRunner enhancements
 
-***Not started***
+***Complete***
 
 #### Objective
 
@@ -138,7 +140,7 @@ Extend `DeterministicEngineRunner` with:
 
 1. An optional `CameraDescriptor camera` constructor parameter (4th parameter, defaults to
    `default`) so test code can supply a custom camera without changing existing call sites.
-2. A public `Rng` property exposing the internal `Random` instance.
+2. A public `Random` property exposing the internal `Random` instance.
 3. A public `SimulationTime` property of type `TimeSpan` that starts at `TimeSpan.Zero` and
    advances by `_fixedTimestep` after each step's `Present()` call.
 4. An `onTick` parameter on `Run` (`Action<DeterministicTickContext>? onTick = null`) called
@@ -153,7 +155,7 @@ The updated `Run` loop executes in this order for each step:
 
 ```text
 BeginFrame(camera)
-  → onTick(new DeterministicTickContext(SimulationTime, _rng, _adapter))
+  → onTick(new DeterministicTickContext(SimulationTime, _random, _adapter))
 EndFrame()
 Present()
 SimulationTime += _fixedTimestep
@@ -179,9 +181,9 @@ All nine new unit tests belong in `DeterministicEngineRunnerTests.cs`:
 | `SimulationTime_AdvancesPerStep` | 5 steps × 16 ms → `SimulationTime == 80 ms` |
 | `SimulationTime_AccumulatesAcrossMultipleRunCalls` | Two `Run(5)` calls → `SimulationTime == 160 ms` (see note) |
 | `TickCallback_ReceivesSequentialSimulationTimes` | 3-step run collects times 0 ms, 16 ms, 32 ms |
-| `TickCallback_RngIsSameReferenceAsRunnerRng` | `ctx.Rng` is `ReferenceEquals` to `runner.Rng` |
+| `TickCallback_RandomIsSameReferenceAsRunnerRandom` | `ctx.Random` is `ReferenceEquals` to `runner.Random` |
 | `TickCallback_AdapterIsSameReferenceAsRunnerAdapter` | `ReferenceEquals(ctx.Adapter, runner.Adapter)` is true |
-| `TickCallback_RngStatePersistsAcrossInvocations` | Two consecutive steps receive different RNG values; re-run with the same seed produces the identical pair |
+| `TickCallback_RandomStatePersistsAcrossInvocations` | Two consecutive steps receive different RNG values; re-run with the same seed produces the identical pair |
 | `Run_WithNullCallback_DoesNotThrow` | `runner.Run(1)` with no callback completes without exception |
 | `Constructor_CameraParameterIsOptional` | Three-argument construction (no `camera`) compiles and runs without error |
 
@@ -191,53 +193,53 @@ All nine new unit tests belong in `DeterministicEngineRunnerTests.cs`:
 
 #### Phase requirements
 
-- (***Not started***) `SimulationTime` starts at zero
+- (***Complete***) `SimulationTime` starts at zero
   - GIVEN a newly constructed `DeterministicEngineRunner`
   - WHEN `SimulationTime` is read before `Run` is called
   - THEN it equals `TimeSpan.Zero`
 
-- (***Not started***) `SimulationTime` advances by one timestep per step
+- (***Complete***) `SimulationTime` advances by one timestep per step
   - GIVEN a runner with a 16 ms timestep
   - WHEN `Run(5)` is called
   - THEN `SimulationTime` equals `TimeSpan.FromMilliseconds(80)`
 
-- (***Not started***) `SimulationTime` accumulates across multiple `Run` calls
+- (***Complete***) `SimulationTime` accumulates across multiple `Run` calls
   - GIVEN a runner with a 16 ms timestep
   - WHEN `Run(5)` is called twice
   - THEN `SimulationTime` equals `TimeSpan.FromMilliseconds(160)`
 
-- (***Not started***) Tick callback receives sequential `SimulationTime` values
+- (***Complete***) Tick callback receives sequential `SimulationTime` values
   - GIVEN a runner with a 16 ms timestep and a 3-step run
   - WHEN the tick callback records `ctx.SimulationTime` on each invocation
   - THEN the recorded sequence is `[0 ms, 16 ms, 32 ms]`
 
-- (***Not started***) `ctx.Rng` is the same reference as `runner.Rng`
-  - GIVEN a tick callback that captures `ctx.Rng`
-  - WHEN compared with `runner.Rng` after the run
-  - THEN `ReferenceEquals(ctx.Rng, runner.Rng)` is true
+- (***Complete***) `ctx.Random` is the same reference as `runner.Random`
+  - GIVEN a tick callback that captures `ctx.Random`
+  - WHEN compared with `runner.Random` after the run
+  - THEN `ReferenceEquals(ctx.Random, runner.Random)` is true
 
-- (***Not started***) `Run` with no callback does not throw
+- (***Complete***) `Run` with no callback does not throw
   - GIVEN a runner with a valid adapter
   - WHEN `Run(1)` is called without providing an `onTick` delegate
   - THEN no exception is thrown
 
-- (***Not started***) `ctx.Adapter` is the same reference as the runner's adapter
+- (***Complete***) `ctx.Adapter` is the same reference as the runner's adapter
   - GIVEN a tick callback that captures `ctx.Adapter`
   - WHEN compared with `runner.Adapter` after the run
   - THEN `ReferenceEquals(ctx.Adapter, runner.Adapter)` is true
 
-- (***Not started***) RNG state persists across callback invocations within the same `Run` call
+- (***Complete***) RNG state persists across callback invocations within the same `Run` call
   - GIVEN a runner with seed 42 and a callback that records one RNG value per step
   - WHEN `Run(2)` is called
   - THEN the two recorded values differ (demonstrating state persistence), and a second
     identical run with seed 42 produces the same pair of values
 
-- (***Not started***) Optional camera constructor parameter does not break existing call sites
+- (***Complete***) Optional camera constructor parameter does not break existing call sites
   - GIVEN the updated `DeterministicEngineRunner` constructor with an optional 4th parameter
   - WHEN constructed with three arguments (no `camera` parameter)
   - THEN the code compiles and the runner executes without error
 
-- (***Not started***) All existing `DeterministicEngineRunnerTests` still pass
+- (***Complete***) All existing `DeterministicEngineRunnerTests` still pass
   - GIVEN the updated `DeterministicEngineRunner` implementation
   - WHEN the existing six tests are run
   - THEN all six pass without modification
@@ -253,7 +255,7 @@ private readonly CameraDescriptor _camera;
 public HeadlessAdapter Adapter => _adapter;
 
 /// <summary>Gets the seeded random number generator used by this runner.</summary>
-public Random Rng => _rng;
+public Random Random => _random;
 
 /// <summary>
 /// Gets the total simulated time elapsed since the runner was constructed.
@@ -279,7 +281,7 @@ public DeterministicEngineRunner(
     CameraDescriptor camera = default)
 {
     _adapter = adapter;
-    _rng = new Random(seed);
+    _random = new Random(seed);
     _fixedTimestep = fixedTimestep;
     _camera = camera;
     SimulationTime = TimeSpan.Zero;
@@ -292,7 +294,7 @@ public DeterministicEngineRunner(
 /// <param name="onTick">
 /// Optional callback invoked each step between <c>BeginFrame</c> and <c>EndFrame</c>.
 /// Receives a <see cref="DeterministicTickContext"/> containing the current
-/// <see cref="SimulationTime"/>, the seeded <see cref="Rng"/>, and the adapter.
+/// <see cref="SimulationTime"/>, the seeded <see cref="Random"/>, and the adapter.
 /// </param>
 public void Run(int steps, Action<DeterministicTickContext>? onTick = null)
 {
@@ -300,7 +302,7 @@ public void Run(int steps, Action<DeterministicTickContext>? onTick = null)
     for (var i = 0; i < steps; i++)
     {
         using var scope = renderProvider.BeginFrame(in _camera);
-        onTick?.Invoke(new DeterministicTickContext(SimulationTime, _rng, _adapter));
+        onTick?.Invoke(new DeterministicTickContext(SimulationTime, _random, _adapter));
         renderProvider.EndFrame();
         renderProvider.Present();
         SimulationTime += _fixedTimestep;
@@ -364,14 +366,14 @@ public void TickCallback_AdapterIsSameReferenceAsRunnerAdapter()
 }
 
 [Fact]
-public void TickCallback_RngStatePersistsAcrossInvocations()
+public void TickCallback_RandomStatePersistsAcrossInvocations()
 {
     var config = new EngineConfig("Headless", null, null);
     using var adapter = new HeadlessAdapter(config);
     var runner1 = new DeterministicEngineRunner(adapter, 42, TimeSpan.FromMilliseconds(16));
     var values1 = new List<float>();
 
-    runner1.Run(2, ctx => values1.Add(ctx.Rng.NextSingle()));
+    runner1.Run(2, ctx => values1.Add(ctx.Random.NextSingle()));
 
     // Two steps must produce different values (state persists across invocations)
     Assert.NotEqual(values1[0], values1[1]);
@@ -380,7 +382,7 @@ public void TickCallback_RngStatePersistsAcrossInvocations()
     using var adapter2 = new HeadlessAdapter(new EngineConfig("Headless", null, null));
     var runner2 = new DeterministicEngineRunner(adapter2, 42, TimeSpan.FromMilliseconds(16));
     var values2 = new List<float>();
-    runner2.Run(2, ctx => values2.Add(ctx.Rng.NextSingle()));
+    runner2.Run(2, ctx => values2.Add(ctx.Random.NextSingle()));
 
     Assert.Equal(values1, values2);
 }
@@ -399,7 +401,7 @@ public void Constructor_CameraParameterIsOptional()
 
 ### Phase 1 — AI/NPC decision-loop scenario
 
-***Not started***
+***Complete***
 
 #### Objective
 
@@ -414,7 +416,7 @@ non-determinism in the runner or the RNG wiring.
 
 - The test helper `RunNpcScenario(int seed)` constructs a fresh `HeadlessAdapter` and
   `DeterministicEngineRunner` each time it is called, ensuring no shared state.
-- `ctx.Rng.NextSingle()` is called twice per tick (for X and Y) in a fixed order; because
+- `ctx.Random.NextSingle()` is called twice per tick (for X and Y) in a fixed order; because
   `Random` with the same seed produces the same sequence, both runs produce identical positions.
 - `HeadlessRenderProvider` is cast from `adapter.RenderProvider` to access `RecordedSprites`
   directly. No `TestAdapter` is needed here because the assertion targets render output only.
@@ -422,7 +424,7 @@ non-determinism in the runner or the RNG wiring.
 
 #### Phase requirements
 
-- (***Not started***) NPC sprite positions are identical between runs with the same seed
+- (***Complete***) NPC sprite positions are identical between runs with the same seed
   - GIVEN two `DeterministicEngineRunner` instances with seed 42, 60 steps, and a 16 ms timestep
   - WHEN both are run with an equivalent NPC tick callback
   - THEN `run1` and `run2` are equal element-by-element (`Assert.Equal(run1, run2)`)
@@ -452,8 +454,8 @@ public sealed class AiIntegrationTests
 
         runner.Run(60, ctx =>
         {
-            var x = ctx.Rng.NextSingle() * 100f;
-            var y = ctx.Rng.NextSingle() * 100f;
+            var x = ctx.Random.NextSingle() * 100f;
+            var y = ctx.Random.NextSingle() * 100f;
             var transform = new TransformDto(x, y, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
             adapter.RenderProvider.SubmitSprite(new SpriteDrawDto("npc", transform, DefaultMaterial, 0));
         });
@@ -473,7 +475,7 @@ public sealed class AiIntegrationTests
 
 ### Phase 2 — Combat audio/render sequence scenario
 
-***Not started***
+***Complete***
 
 #### Objective
 
@@ -503,13 +505,13 @@ stable across two runs.
 
 #### Phase requirements
 
-- (***Not started***) Combat call sequence is deterministic and correctly ordered
+- (***Complete***) Combat call sequence is deterministic and correctly ordered
   - GIVEN two `TestAdapter` instances driven by `DeterministicEngineRunner` with seed 1337 and
     10 steps
   - WHEN the combat tick callback submits a sprite each step and audio on even steps
   - THEN both `RecordedCalls` sequences are equal element-by-element
 
-- (***Not started***) Audio events occur only on even steps
+- (***Complete***) Audio events occur only on even steps
   - GIVEN a single 10-step combat run
   - WHEN `RecordedCalls` is filtered to audio entries
   - THEN exactly 5 audio entries are present, each recording `StartPlayback("weapon_fire")`
@@ -578,7 +580,7 @@ public sealed class CombatIntegrationTests
 
 ### Phase 3 — Map generation batch scenario
 
-***Not started***
+***Complete***
 
 #### Objective
 
@@ -593,17 +595,17 @@ mesh count is 1000 and that all mesh entries are identical between two runs with
 - `render.RecordedMeshes` provides direct access to the accumulated `MeshDrawDto` list.
 - 100 steps × 10 meshes per step = 1000 total mesh entries; this is asserted as a count before
   the per-element equality check to give a clearer failure message if the count is wrong.
-- `ctx.Rng.NextSingle()` is called six times per mesh (X, Y, Z, ScaleX, ScaleY, ScaleZ) in a
+- `ctx.Random.NextSingle()` is called six times per mesh (X, Y, Z, ScaleX, ScaleY, ScaleZ) in a
   fixed order inside the callback. The same seed produces the same sequence both times.
 
 #### Phase requirements
 
-- (***Not started***) Map generation produces exactly 1000 mesh entries
+- (***Complete***) Map generation produces exactly 1000 mesh entries
   - GIVEN a `DeterministicEngineRunner` with seed 0, 100 steps, and 10 meshes per tick
   - WHEN `Run` completes
   - THEN `render.RecordedMeshes.Count == 1000`
 
-- (***Not started***) Map generation output is identical between runs with the same seed
+- (***Complete***) Map generation output is identical between runs with the same seed
   - GIVEN two runs with seed 0
   - WHEN mesh entries are compared element-by-element
   - THEN all 1000 entries are equal
@@ -635,12 +637,12 @@ public sealed class MapGenerationIntegrationTests
         {
             for (var i = 0; i < 10; i++)
             {
-                var x = ctx.Rng.NextSingle() * 512f;
-                var y = ctx.Rng.NextSingle() * 512f;
-                var z = ctx.Rng.NextSingle() * 10f;
-                var scaleX = ctx.Rng.NextSingle() * 4f + 1f;
-                var scaleY = ctx.Rng.NextSingle() * 4f + 1f;
-                var scaleZ = ctx.Rng.NextSingle() * 4f + 1f;
+                var x = ctx.Random.NextSingle() * 512f;
+                var y = ctx.Random.NextSingle() * 512f;
+                var z = ctx.Random.NextSingle() * 10f;
+                var scaleX = ctx.Random.NextSingle() * 4f + 1f;
+                var scaleY = ctx.Random.NextSingle() * 4f + 1f;
+                var scaleZ = ctx.Random.NextSingle() * 4f + 1f;
                 var transform = new TransformDto(x, y, z, 0f, 0f, 0f, scaleX, scaleY, scaleZ);
                 adapter.RenderProvider.SubmitMesh(
                     new MeshDrawDto($"tile_{i}", transform, DefaultMaterial, 0));
