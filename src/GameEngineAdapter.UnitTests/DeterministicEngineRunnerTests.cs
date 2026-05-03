@@ -96,4 +96,123 @@ public class DeterministicEngineRunnerTests
         Assert.Same(rng, ctx.Rng);
         Assert.Same(adapter, ctx.Adapter);
     }
+
+    [Fact]
+    public void SimulationTime_IsZeroAfterConstruction()
+    {
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
+
+        Assert.Equal(TimeSpan.Zero, runner.SimulationTime);
+    }
+
+    [Fact]
+    public void SimulationTime_AdvancesPerStep()
+    {
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
+
+        runner.Run(5);
+
+        Assert.Equal(TimeSpan.FromMilliseconds(80), runner.SimulationTime);
+    }
+
+    [Fact]
+    public void SimulationTime_AccumulatesAcrossMultipleRunCalls()
+    {
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
+
+        runner.Run(5);
+        runner.Run(5);
+
+        Assert.Equal(TimeSpan.FromMilliseconds(160), runner.SimulationTime);
+    }
+
+    [Fact]
+    public void TickCallback_ReceivesSequentialSimulationTimes()
+    {
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
+        var times = new List<TimeSpan>();
+
+        runner.Run(3, ctx => times.Add(ctx.SimulationTime));
+
+        Assert.Equal(
+            [TimeSpan.Zero, TimeSpan.FromMilliseconds(16), TimeSpan.FromMilliseconds(32)],
+            times);
+    }
+
+    [Fact]
+    public void TickCallback_RngIsSameReferenceAsRunnerRng()
+    {
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
+        Random? captured = null;
+
+        runner.Run(1, ctx => captured = ctx.Rng);
+
+        Assert.True(ReferenceEquals(runner.Rng, captured));
+    }
+
+    [Fact]
+    public void TickCallback_AdapterIsSameReferenceAsRunnerAdapter()
+    {
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
+        HeadlessAdapter? captured = null;
+
+        runner.Run(1, ctx => captured = ctx.Adapter);
+
+        Assert.True(ReferenceEquals(runner.Adapter, captured));
+    }
+
+    [Fact]
+    public void TickCallback_RngStatePersistsAcrossInvocations()
+    {
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner1 = new DeterministicEngineRunner(adapter, 42, TimeSpan.FromMilliseconds(16));
+        var values1 = new List<float>();
+
+        runner1.Run(2, ctx => values1.Add(ctx.Rng.NextSingle()));
+
+        // Two steps must produce different values (state persists across invocations)
+        Assert.NotEqual(values1[0], values1[1]);
+
+        // Re-run with the same seed must produce the identical sequence
+        using var adapter2 = new HeadlessAdapter(new EngineConfig("Headless", null, null));
+        var runner2 = new DeterministicEngineRunner(adapter2, 42, TimeSpan.FromMilliseconds(16));
+        var values2 = new List<float>();
+        runner2.Run(2, ctx => values2.Add(ctx.Rng.NextSingle()));
+
+        Assert.Equal(values1, values2);
+    }
+
+    [Fact]
+    public void Run_WithNullCallback_DoesNotThrow()
+    {
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
+
+        runner.Run(1);
+    }
+
+    [Fact]
+    public void Constructor_CameraParameterIsOptional()
+    {
+        // Three-argument construction (no camera) must compile and run without error.
+        var config = new EngineConfig("Headless", null, null);
+        using var adapter = new HeadlessAdapter(config);
+        var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
+
+        runner.Run(1);
+    }
 }
