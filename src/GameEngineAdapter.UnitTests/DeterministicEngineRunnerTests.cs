@@ -148,7 +148,7 @@ public class DeterministicEngineRunnerTests
     }
 
     [Fact]
-    public void TickCallback_RngIsSameReferenceAsRunnerRng()
+    public void TickCallback_RandomIsSameReferenceAsRunnerRandom()
     {
         var config = new EngineConfig("Headless", null, null);
         using var adapter = new HeadlessAdapter(config);
@@ -157,7 +157,7 @@ public class DeterministicEngineRunnerTests
 
         runner.Run(1, ctx => captured = ctx.Random);
 
-        Assert.True(ReferenceEquals(runner.Rng, captured));
+        Assert.True(ReferenceEquals(runner.Random, captured));
     }
 
     [Fact]

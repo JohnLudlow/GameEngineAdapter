@@ -8,7 +8,7 @@ using JohnLudlow.GameEngineAdapter.Core;
 public sealed class DeterministicEngineRunner
 {
     private readonly HeadlessAdapter _adapter;
-    private readonly Random _rng;
+    private readonly Random _random;
     private readonly TimeSpan _fixedTimestep;
     private readonly CameraDescriptor _camera;
 
@@ -20,7 +20,7 @@ public sealed class DeterministicEngineRunner
     /// <summary>
     /// Gets the seeded random number generator used by this runner.
     /// </summary>
-    public Random Rng => _rng;
+    public Random Random => _random;
 
     /// <summary>
     /// Gets the current simulated time. Starts at <see cref="TimeSpan.Zero"/> and advances by
@@ -46,7 +46,7 @@ public sealed class DeterministicEngineRunner
         CameraDescriptor camera = default)
     {
         _adapter = adapter;
-        _rng = new Random(seed);
+        _random = new Random(seed);
         _fixedTimestep = fixedTimestep;
         _camera = camera;
         SimulationTime = TimeSpan.Zero;
@@ -58,7 +58,7 @@ public sealed class DeterministicEngineRunner
     /// <param name="steps">Number of simulation steps to execute.</param>
     /// <param name="onTick">
     /// Optional per-step callback invoked between <c>BeginFrame</c> and <c>EndFrame</c>,
-    /// receiving the current <see cref="SimulationTime"/>, the runner's seeded <see cref="Rng"/>,
+    /// receiving the current <see cref="SimulationTime"/>, the runner's seeded <see cref="Random"/>,
     /// and the underlying <see cref="Adapter"/>. May be <see langword="null"/>.
     /// </param>
     public void Run(int steps, Action<DeterministicTickContext>? onTick = null)
@@ -68,7 +68,7 @@ public sealed class DeterministicEngineRunner
         for (var i = 0; i < steps; i++)
         {
             using var scope = renderProvider.BeginFrame(in _camera);
-            onTick?.Invoke(new DeterministicTickContext(SimulationTime, _rng, _adapter));
+            onTick?.Invoke(new DeterministicTickContext(SimulationTime, _random, _adapter));
             renderProvider.EndFrame();
             renderProvider.Present();
             SimulationTime += _fixedTimestep;
