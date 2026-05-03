@@ -18,8 +18,8 @@ public sealed class AiIntegrationTests
 
         runner.Run(60, ctx =>
         {
-            var x = ctx.Rng.NextSingle() * 100f;
-            var y = ctx.Rng.NextSingle() * 100f;
+            var x = ctx.Random.NextSingle() * 100f;
+            var y = ctx.Random.NextSingle() * 100f;
             var transform = new TransformDto(x, y, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
             adapter.RenderProvider.SubmitSprite(new SpriteDrawDto("npc", transform, DefaultMaterial, 0));
         });

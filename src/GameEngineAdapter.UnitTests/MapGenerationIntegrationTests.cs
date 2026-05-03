@@ -20,12 +20,12 @@ public sealed class MapGenerationIntegrationTests
         {
             for (var i = 0; i < 10; i++)
             {
-                var x = ctx.Rng.NextSingle() * 512f;
-                var y = ctx.Rng.NextSingle() * 512f;
-                var z = ctx.Rng.NextSingle() * 10f;
-                var scaleX = ctx.Rng.NextSingle() * 4f + 1f;
-                var scaleY = ctx.Rng.NextSingle() * 4f + 1f;
-                var scaleZ = ctx.Rng.NextSingle() * 4f + 1f;
+                var x = ctx.Random.NextSingle() * 512f;
+                var y = ctx.Random.NextSingle() * 512f;
+                var z = ctx.Random.NextSingle() * 10f;
+                var scaleX = ctx.Random.NextSingle() * 4f + 1f;
+                var scaleY = ctx.Random.NextSingle() * 4f + 1f;
+                var scaleZ = ctx.Random.NextSingle() * 4f + 1f;
                 var transform = new TransformDto(x, y, z, 0f, 0f, 0f, scaleX, scaleY, scaleZ);
                 adapter.RenderProvider.SubmitMesh(
                     new MeshDrawDto($"tile_{i}", transform, DefaultMaterial, 0));

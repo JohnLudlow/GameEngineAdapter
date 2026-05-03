@@ -93,7 +93,7 @@ public class DeterministicEngineRunnerTests
 
         // Assert - properties are accessible
         Assert.Equal(simulationTime, ctx.SimulationTime);
-        Assert.Same(rng, ctx.Rng);
+        Assert.Same(rng, ctx.Random);
         Assert.Same(adapter, ctx.Adapter);
     }
 
@@ -155,7 +155,7 @@ public class DeterministicEngineRunnerTests
         var runner = new DeterministicEngineRunner(adapter, 0, TimeSpan.FromMilliseconds(16));
         Random? captured = null;
 
-        runner.Run(1, ctx => captured = ctx.Rng);
+        runner.Run(1, ctx => captured = ctx.Random);
 
         Assert.True(ReferenceEquals(runner.Rng, captured));
     }
@@ -181,7 +181,7 @@ public class DeterministicEngineRunnerTests
         var runner1 = new DeterministicEngineRunner(adapter, 42, TimeSpan.FromMilliseconds(16));
         var values1 = new List<float>();
 
-        runner1.Run(2, ctx => values1.Add(ctx.Rng.NextSingle()));
+        runner1.Run(2, ctx => values1.Add(ctx.Random.NextSingle()));
 
         // Two steps must produce different values (state persists across invocations)
         Assert.NotEqual(values1[0], values1[1]);
@@ -190,7 +190,7 @@ public class DeterministicEngineRunnerTests
         using var adapter2 = new HeadlessAdapter(new EngineConfig("Headless", null, null));
         var runner2 = new DeterministicEngineRunner(adapter2, 42, TimeSpan.FromMilliseconds(16));
         var values2 = new List<float>();
-        runner2.Run(2, ctx => values2.Add(ctx.Rng.NextSingle()));
+        runner2.Run(2, ctx => values2.Add(ctx.Random.NextSingle()));
 
         Assert.Equal(values1, values2);
     }
