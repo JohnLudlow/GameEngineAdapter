@@ -174,7 +174,7 @@ public class DeterministicEngineRunnerTests
     }
 
     [Fact]
-    public void TickCallback_RngStatePersistsAcrossInvocations()
+    public void TickCallback_RandomStatePersistsAcrossInvocations()
     {
         var config = new EngineConfig("Headless", null, null);
         using var adapter = new HeadlessAdapter(config);
