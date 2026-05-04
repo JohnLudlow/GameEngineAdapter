@@ -6,7 +6,7 @@ namespace JohnLudlow.GameEngineAdapter.Headless;
 /// <param name="SimulationTime">
 /// Simulated time at the start of this step.
 /// </param>
-/// <param name="Rng">
+/// <param name="Random">
 /// Seeded random number generator for deterministic outputs. Shared with the runner; calls consume the sequence.
 /// </param>
 /// <param name="Adapter">
@@ -14,5 +14,5 @@ namespace JohnLudlow.GameEngineAdapter.Headless;
 /// </param>
 public readonly record struct DeterministicTickContext(
     TimeSpan SimulationTime,
-    Random Rng,
+    Random Random,
     HeadlessAdapter Adapter);

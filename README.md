@@ -30,6 +30,9 @@ GameEngineAdapter provides a set of stable, minimal C# interfaces and DTOs for b
   - Define stable adapter contracts and DTOs
   - Document interfaces and provide minimal working examples
   - Add headless/test adapters for CI
+- [Phase 2: Headless adapter development](docs/plans/phase-2-headless-adapter-development.md) ([#5](https://github.com/JohnLudlow/GameEngineAdapter/issues/5))
+  - Headless and test adapters for CI-clean simulation
+  - [Deterministic integration test suite](docs/plans/integration-test-suite.md) ([#16](https://github.com/JohnLudlow/GameEngineAdapter/issues/16)) — complete; see the [contributor guide](docs/guides/deterministic-integration-testing.md)
 - Future: Engine-specific adapters (MonoGame, Stride, Raylib, etc.)
 
 ## Prerequisites
