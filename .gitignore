@@ -365,5 +365,4 @@ MigrationBackup/
 # Macbook data store file
 .DS_Store
 
-# pulumi profiles
-Pulumi.*.yaml
+/.omo/

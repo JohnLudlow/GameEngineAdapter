@@ -30,4 +30,11 @@ This repository uses a lightweight workitem convention to keep issues useful and
 - Keep issues small and focused; large efforts should be tracked with `scale-epic` and child issues.
 - Use cross-references to link related work and PRs.
 
+### Output destinations
+
+- Feature documentation and detailed implementation plans are stored under `docs/plans/` as markdown files.
+- Primary tracking and work-item management uses GitHub issues.
+- Cross-reference issues and plan documents (e.g., `(#123)` in markdown, plan-file links in issue bodies) to keep both in sync.
+- Plan documents follow the template at `docs/templates/plan-template.md`.
+
 If you have questions about this policy, open an issue and tag a maintainer.
