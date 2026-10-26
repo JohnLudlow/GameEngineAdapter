@@ -3,6 +3,16 @@
 This document records the current contract boundary before a terminal UI
 adapter is designed. It is not an implementation plan.
 
+## Agreed first-release scope
+
+The first usable TUI must include labels, checkboxes, lists, panels, buttons, and tab controls.
+
+- Mouse click support is included; mouse move and scroll support are not part of this first scope.
+- Tab and Shift+Tab must cycle deterministically through enabled controls.
+- Full redraws are permitted, provided they remain visually stable during idle and normal interaction.
+
+The detailed interaction semantics remain open. In particular, the design must define which controls are focusable, each control's keyboard and click behavior, focus changes after controls are disabled or removed, and resize behavior.
+
 ## Current state
 
 `IUserInterfaceProvider` is an empty interface. It therefore supplies no
