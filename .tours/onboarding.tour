@@ -1,0 +1,74 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "GameEngineAdapter onboarding",
+  "description": "A guided introduction to the solution, its engine-agnostic contracts, the headless reference adapter, and deterministic integration tests.",
+  "isPrimary": true,
+  "steps": [
+    {
+      "title": "Start with the project boundary",
+      "description": "Read the project purpose before opening implementation code. The library defines contracts and DTOs that let game logic remain independent of a particular engine; adapter implementations depend on those contracts.",
+      "file": "README.md",
+      "line": 6
+    },
+    {
+      "title": "Locate the four assemblies",
+      "description": "The solution separates the public **Core** contracts, the **Headless** reference implementation, **UnitTests**, and **Benchmarks**. Use this map when following a type from its contract to an implementation and test.",
+      "file": "GameEngineAdapter.slnx",
+      "line": 3
+    },
+    {
+      "title": "Meet the root adapter contract",
+      "description": "`IEngineAdapter` is the entry point an application receives. It exposes capabilities, lifecycle methods, and provider properties. Notice that it does **not** own the render-frame lifecycle; that belongs to `IRenderProvider`.",
+      "file": "src/GameEngineAdapter.Core/IEngineAdapter.cs",
+      "line": 6
+    },
+    {
+      "title": "Understand capability negotiation",
+      "description": "`EngineCapabilities` is an immutable record struct describing optional features and limits. Application code should use it to adapt to the selected engine rather than assuming every adapter has the same rendering, audio, or UI support.",
+      "file": "src/GameEngineAdapter.Core/EngineCapabilities.cs",
+      "line": 15
+    },
+    {
+      "title": "Follow a render frame",
+      "description": "`IRenderProvider` owns the explicit frame sequence: `BeginFrame`, submit draw DTOs, `EndFrame`, then `Present`. Disposing `FrameScope` alone does not end or present a frame.",
+      "file": "src/GameEngineAdapter.Core/IRenderProvider.cs",
+      "line": 6
+    },
+    {
+      "title": "Identify the TUI contract gap",
+      "description": "`IUserInterfaceProvider` is intentionally empty today. A TUI adapter cannot yet implement reusable controls, focus behaviour, or mouse semantics through this contract; requirements must define those members before an implementation begins.",
+      "file": "src/GameEngineAdapter.Core/IUserInterfaceProvider.cs",
+      "line": 6
+    },
+    {
+      "title": "Read the reference adapter",
+      "description": "`HeadlessAdapter` is the concrete reference implementation of `IEngineAdapter`. It constructs each provider and declares the capabilities used by deterministic tests. Compare each exposed property with the root contract.",
+      "file": "src/GameEngineAdapter.Headless/HeadlessAdapter.cs",
+      "line": 9
+    },
+    {
+      "title": "See deterministic execution",
+      "description": "`DeterministicEngineRunner` drives the headless render lifecycle using a seeded `Random` and a fixed timestep. This is the boundary that makes repeatable, CI-safe scenarios possible.",
+      "file": "src/GameEngineAdapter.Headless/DeterministicEngineRunner.cs",
+      "line": 8
+    },
+    {
+      "title": "See cross-provider recording",
+      "description": "`TestAdapter` decorates the headless adapter's providers and stores an ordered call log. Use it when a test needs to assert the sequence of application calls across providers rather than a single provider's recorded output.",
+      "file": "src/GameEngineAdapter.Headless/TestAdapter.cs",
+      "line": 9
+    },
+    {
+      "title": "Read an executable scenario",
+      "description": "This test creates a `TestAdapter`, runs a fixed-timestep combat scenario, and asserts deterministic render/audio call sequences. It is the shortest concrete example of how consumers compose the headless pieces.",
+      "file": "src/GameEngineAdapter.UnitTests/CombatIntegrationTests.cs",
+      "line": 13
+    },
+    {
+      "title": "Use the testing guide next",
+      "description": "The deterministic integration-testing guide expands on the tour's testing steps, including when to choose integration tests and how to preserve determinism.",
+      "file": "docs/guides/deterministic-integration-testing.md",
+      "line": 5
+    }
+  ]
+}
