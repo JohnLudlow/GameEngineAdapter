@@ -35,6 +35,14 @@ The per-control action semantics remain open. For example, the design must still
 
 The application-specific effects of activating a list item, button, or tab page remain the responsibility of the consumer. The shared UI contract should describe the input, selection, focus, and activation events without assuming those domain effects.
 
+## Agreed navigation-bounds baseline
+
+- Pressing Up on the first selected list item or Down on the last selected list item keeps the current selection unchanged.
+- Pressing Left on the first selected tab selects the last tab.
+- Pressing Right on the last selected tab selects the first tab.
+
+The initial selection, behavior for an empty list or tab control, and behavior after a selected item or page is removed remain open decisions.
+
 ## Current state
 
 `IUserInterfaceProvider` is an empty interface. It therefore supplies no
