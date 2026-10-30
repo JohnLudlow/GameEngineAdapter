@@ -5,11 +5,13 @@ This repository uses a lightweight workitem convention to keep issues useful and
 ## Workitem basics
 
 - Minimal required fields for every issue: type, title, description
-- Every workitem must include at least one label. Use the expanded taxonomy: type (bug/feature/idea), priority (priority-high/priority-medium/priority-low), and area (area-*) labels. Use `scale-epic` to mark large umbrella items.
+- Every workitem must include at least one label. Use the expanded taxonomy: type (bug/feature/idea), priority
+  (priority-high/priority-medium/priority-low), and area (area-*) labels. Use `scale-epic` to mark large umbrella items.
 
 ## Who can create and label workitems
 
-- Only maintainers may set labels and create workitems. If you need a new label, open a discussion or contact a maintainer.
+- Only maintainers may set labels and create workitems. If you need a new label, open a discussion or contact a
+  maintainer.
 
 ### Bug reports
 
@@ -34,7 +36,8 @@ This repository uses a lightweight workitem convention to keep issues useful and
 
 - Feature documentation and detailed implementation plans are stored under `docs/plans/` as markdown files.
 - Primary tracking and work-item management uses GitHub issues.
-- Cross-reference issues and plan documents (e.g., `(#123)` in markdown, plan-file links in issue bodies) to keep both in sync.
+- Cross-reference issues and plan documents (e.g., `(#123)` in markdown, plan-file links in issue bodies) to keep both
+  in sync.
 - Plan documents follow the template at `docs/templates/plan-template.md`.
 
 If you have questions about this policy, open an issue and tag a maintainer.

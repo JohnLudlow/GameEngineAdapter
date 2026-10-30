@@ -2,7 +2,9 @@
 
 This file configures agents and skills for the GitHub Copilot CLI harness in the GameEngineAdapter repository.
 
-For each agent or skill that supports configuration, create a YAML block below with the agent's key and your harness-specific overrides. Configuration merges with defaults and CONTRIBUTING.md settings according to jl-config precedence (AGENTS.md > CONTRIBUTING.md > defaults).
+For each agent or skill that supports configuration, create a YAML block below with the agent's key and your
+harness-specific overrides. Configuration merges with defaults and CONTRIBUTING.md settings according to jl-config
+precedence (AGENTS.md > CONTRIBUTING.md > defaults).
 
 ## Agent config
 
@@ -44,8 +46,10 @@ jl_prototype:
 
 ## Notes
 
-- **Configuration applied**: This file configures jl-* planning, implementation, testing, and documentation skills for the GitHub Copilot CLI harness.
-- **Precedence**: AGENTS.md settings override CONTRIBUTING.md or agent defaults. Omitted settings fall back to lower-precedence sources.
+- **Configuration applied**: This file configures jl-* planning, implementation, testing, and documentation skills for
+  the GitHub Copilot CLI harness.
+- **Precedence**: AGENTS.md settings override CONTRIBUTING.md or agent defaults. Omitted settings fall back to
+  lower-precedence sources.
 - **Team-wide defaults**: See CONTRIBUTING.md for shared repository configuration (if defined).
 - **Portability**: Another contributor can use this same AGENTS.md and inherit the same agent behavior.
 
@@ -53,4 +57,5 @@ For detailed configuration guidance, see:
 
 - `CONTRIBUTING.md` — team-wide agent configuration
 - Individual skill documentation for schema, defaults, and allowed values
-- [jl-config](https://github.com/johnludlow/agents/tree/main/.agents/skills/jl-config) — portable configuration mechanism
+- [jl-config](https://github.com/johnludlow/agents/tree/main/.agents/skills/jl-config) — portable configuration
+  mechanism

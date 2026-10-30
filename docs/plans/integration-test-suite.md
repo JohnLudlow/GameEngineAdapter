@@ -2,19 +2,18 @@
 
 ## Overview
 
-This plan covers the creation of a deterministic integration test suite for the headless adapter.
-No integration tests currently exist for the adapter in end-to-end simulation scenarios. The tests
-validate that the adapter correctly supports the patterns required for AI/NPC decision loops, combat
-audio/render sequences, and map generation batches — without relying on any native platform
-dependencies.
+This plan covers the creation of a deterministic integration test suite for the headless adapter. No integration tests
+currently exist for the adapter in end-to-end simulation scenarios. The tests validate that the adapter correctly
+supports the patterns required for AI/NPC decision loops, combat audio/render sequences, and map generation batches —
+without relying on any native platform dependencies.
 
-Each scenario uses `DeterministicEngineRunner` with a fixed seed and either `HeadlessAdapter` or
-`TestAdapter` to record provider calls. Running the same scenario twice with the same seed must
-produce byte-for-byte identical output, making failures easy to diagnose.
+Each scenario uses `DeterministicEngineRunner` with a fixed seed and either `HeadlessAdapter` or `TestAdapter` to record
+provider calls. Running the same scenario twice with the same seed must produce byte-for-byte identical output, making
+failures easy to diagnose.
 
-Before the integration tests can be written, `DeterministicEngineRunner` must be extended with a
-tick callback, `SimulationTime` tracking, and a configurable camera. Phase 0 covers those runner
-enhancements; Phases 1–3 cover the three domain scenarios.
+Before the integration tests can be written, `DeterministicEngineRunner` must be extended with a tick callback,
+`SimulationTime` tracking, and a configurable camera. Phase 0 covers those runner enhancements; Phases 1–3 cover the
+three domain scenarios.
 
 ## Table of contents
 
@@ -58,7 +57,9 @@ enhancements; Phases 1–3 cover the three domain scenarios.
 
 Complete
 
-Implemented on branch `16-integration-test-suite-for-ai-combat-and-map-generation-scenarios-no-plan-yet` across commits `1d97689`, `b38948b`, `375d5f6`, `a81a687`, with the `Random`-rename refinements in `25caca2` and `f936c1a`. All 132 tests in `GameEngineAdapter.UnitTests` pass.
+Implemented on branch `16-integration-test-suite-for-ai-combat-and-map-generation-scenarios-no-plan-yet` across commits
+`1d97689`, `b38948b`, `375d5f6`, `a81a687`, with the `Random`-rename refinements in `25caca2` and `f936c1a`. All 132
+tests in `GameEngineAdapter.UnitTests` pass.
 
 ## Definition of terms
 
@@ -73,30 +74,27 @@ Implemented on branch `16-integration-test-suite-for-ai-combat-and-map-generatio
 
 ## Architectural considerations and constraints
 
-- **Prerequisites**: Phase 0 (runner enhancements) must be complete before any integration-test phase
-  can be written or pass. Phases 1–3 are independent of each other once Phase 0 is done.
-- **No native dependencies**: All scenarios run headless. No GPU, audio hardware, or platform SDK
-  calls are permitted. Tests must pass in GitHub Actions without additional setup.
-- **Determinism contract**: Every scenario is run twice with the same seed. Both runs must produce
-  identical recorded output. Any non-determinism is a bug in the adapter or the test itself.
-- **Test project location**: All integration tests live in the existing
-  `src/GameEngineAdapter.UnitTests/` project. No new project is needed.
-- **File naming convention**: Integration test files use the suffix `*IntegrationTests.cs` to
-  distinguish them from pure unit tests.
-- **Self-contained scenarios**: Each scenario constructs its own adapter and runner. No shared state
-  between test methods or test classes.
-- **Tick callback position**: The `onTick` callback is called after `BeginFrame` and before
-  `EndFrame`, so submissions inside the callback are enclosed within a valid frame.
-- **`SimulationTime` increment timing**: `SimulationTime` increments after `Present()`. The callback
-  for step 0 therefore sees `SimulationTime == TimeSpan.Zero`; step 1 sees 16 ms; step 2 sees
-  32 ms, and so on.
-- **Combat test adapter wiring**: For the combat scenario, `DeterministicEngineRunner` is
-  constructed with `testAdapter.Inner` as the `HeadlessAdapter`, but all provider calls
-  (render, audio) are made through the `testAdapter` providers (the recording decorators), so
-  `RecordedCalls` captures the full cross-provider sequence.
-- **`RecordingRenderProvider` access**: `RecordingRenderProvider` is `public sealed`, so test code
-  can reach `testAdapter.Inner.RenderProvider` for direct `HeadlessRenderProvider` access when
-  required.
+- **Prerequisites**: Phase 0 (runner enhancements) must be complete before any integration-test phase can be written or
+  pass. Phases 1–3 are independent of each other once Phase 0 is done.
+- **No native dependencies**: All scenarios run headless. No GPU, audio hardware, or platform SDK calls are permitted.
+  Tests must pass in GitHub Actions without additional setup.
+- **Determinism contract**: Every scenario is run twice with the same seed. Both runs must produce identical recorded
+  output. Any non-determinism is a bug in the adapter or the test itself.
+- **Test project location**: All integration tests live in the existing `src/GameEngineAdapter.UnitTests/` project. No
+  new project is needed.
+- **File naming convention**: Integration test files use the suffix `*IntegrationTests.cs` to distinguish them from pure
+  unit tests.
+- **Self-contained scenarios**: Each scenario constructs its own adapter and runner. No shared state between test
+  methods or test classes.
+- **Tick callback position**: The `onTick` callback is called after `BeginFrame` and before `EndFrame`, so submissions
+  inside the callback are enclosed within a valid frame.
+- **`SimulationTime` increment timing**: `SimulationTime` increments after `Present()`. The callback for step 0
+  therefore sees `SimulationTime == TimeSpan.Zero`; step 1 sees 16 ms; step 2 sees 32 ms, and so on.
+- **Combat test adapter wiring**: For the combat scenario, `DeterministicEngineRunner` is constructed with
+  `testAdapter.Inner` as the `HeadlessAdapter`, but all provider calls (render, audio) are made through the
+  `testAdapter` providers (the recording decorators), so `RecordedCalls` captures the full cross-provider sequence.
+- **`RecordingRenderProvider` access**: `RecordingRenderProvider` is `public sealed`, so test code can reach
+  `testAdapter.Inner.RenderProvider` for direct `HeadlessRenderProvider` access when required.
 
 ### Dependency diagram
 
@@ -138,16 +136,16 @@ Phase 0  ──► Phase 1 (AI)
 
 Extend `DeterministicEngineRunner` with:
 
-1. An optional `CameraDescriptor camera` constructor parameter (4th parameter, defaults to
-   `default`) so test code can supply a custom camera without changing existing call sites.
+1. An optional `CameraDescriptor camera` constructor parameter (4th parameter, defaults to `default`) so test code can
+   supply a custom camera without changing existing call sites.
 2. A public `Random` property exposing the internal `Random` instance.
-3. A public `SimulationTime` property of type `TimeSpan` that starts at `TimeSpan.Zero` and
-   advances by `_fixedTimestep` after each step's `Present()` call.
-4. An `onTick` parameter on `Run` (`Action<DeterministicTickContext>? onTick = null`) called
-   between `BeginFrame` and `EndFrame` on every step.
+3. A public `SimulationTime` property of type `TimeSpan` that starts at `TimeSpan.Zero` and advances by `_fixedTimestep`
+   after each step's `Present()` call.
+4. An `onTick` parameter on `Run` (`Action<DeterministicTickContext>? onTick = null`) called between `BeginFrame` and
+   `EndFrame` on every step.
 
-Success criterion: all six existing tests in `DeterministicEngineRunnerTests.cs` continue to
-pass, and nine new unit tests (see Phase requirements) all pass.
+Success criterion: all six existing tests in `DeterministicEngineRunnerTests.cs` continue to pass, and nine new unit
+tests (see Phase requirements) all pass.
 
 #### Technical details
 
@@ -161,17 +159,15 @@ Present()
 SimulationTime += _fixedTimestep
 ```
 
-`SimulationTime` is incremented *after* `Present()`, so the callback for step 0 receives
-`TimeSpan.Zero`, step 1 receives `_fixedTimestep`, step 2 receives `2 × _fixedTimestep`, and
-so on. This matches the expectation of consuming code that treats `SimulationTime` as the elapsed
-time at the *start* of the current tick.
+`SimulationTime` is incremented *after* `Present()`, so the callback for step 0 receives `TimeSpan.Zero`, step 1
+receives `_fixedTimestep`, step 2 receives `2 × _fixedTimestep`, and so on. This matches the expectation of consuming
+code that treats `SimulationTime` as the elapsed time at the *start* of the current tick.
 
-The `CameraDescriptor camera` parameter replaces the hard-coded `ProjectionType.Orthographic`
-camera that currently lives inside `Run`. When `camera` equals `default`, all camera fields are
-zero-initialised. The headless provider ignores camera configuration entirely (its `BeginFrame`
-is a no-op), so existing tests pass unchanged. Callers targeting a real renderer must supply an
-explicit camera, as the zero-initialised defaults differ from the current hard-coded values
-(`OrthographicSize = 10f`, `AspectRatio ≈ 1.778`, `NearPlane = 0.1f`, `FarPlane = 100f`).
+The `CameraDescriptor camera` parameter replaces the hard-coded `ProjectionType.Orthographic` camera that currently
+lives inside `Run`. When `camera` equals `default`, all camera fields are zero-initialised. The headless provider
+ignores camera configuration entirely (its `BeginFrame` is a no-op), so existing tests pass unchanged. Callers targeting
+a real renderer must supply an explicit camera, as the zero-initialised defaults differ from the current hard-coded
+values (`OrthographicSize = 10f`, `AspectRatio ≈ 1.778`, `NearPlane = 0.1f`, `FarPlane = 100f`).
 
 All nine new unit tests belong in `DeterministicEngineRunnerTests.cs`:
 
@@ -187,9 +183,9 @@ All nine new unit tests belong in `DeterministicEngineRunnerTests.cs`:
 | `Run_WithNullCallback_DoesNotThrow` | `runner.Run(1)` with no callback completes without exception |
 | `Constructor_CameraParameterIsOptional` | Three-argument construction (no `camera`) compiles and runs without error |
 
-> Note: Issue #15 specifies `Run(3)` then `Run(2)` → 80 ms for the accumulation test. This plan
-> uses two `Run(5)` calls → 160 ms. Both parameterisations validate that `SimulationTime` persists
-> across calls; the values differ by design for clarity, not due to a specification conflict.
+> Note: Issue #15 specifies `Run(3)` then `Run(2)` → 80 ms for the accumulation test. This plan uses two `Run(5)` calls
+> → 160 ms. Both parameterisations validate that `SimulationTime` persists across calls; the values differ by design for
+> clarity, not due to a specification conflict.
 
 #### Phase requirements
 
@@ -231,8 +227,8 @@ All nine new unit tests belong in `DeterministicEngineRunnerTests.cs`:
 - (***Complete***) RNG state persists across callback invocations within the same `Run` call
   - GIVEN a runner with seed 42 and a callback that records one RNG value per step
   - WHEN `Run(2)` is called
-  - THEN the two recorded values differ (demonstrating state persistence), and a second
-    identical run with seed 42 produces the same pair of values
+  - THEN the two recorded values differ (demonstrating state persistence), and a second identical run with seed 42
+    produces the same pair of values
 
 - (***Complete***) Optional camera constructor parameter does not break existing call sites
   - GIVEN the updated `DeterministicEngineRunner` constructor with an optional 4th parameter
@@ -405,21 +401,21 @@ public void Constructor_CameraParameterIsOptional()
 
 #### Objective
 
-Write `AiIntegrationTests.cs`. The scenario simulates an NPC that uses the seeded RNG each tick to
-produce a deterministic world-space position, then submits a sprite at that position.
+Write `AiIntegrationTests.cs`. The scenario simulates an NPC that uses the seeded RNG each tick to produce a
+deterministic world-space position, then submits a sprite at that position.
 
-Run with seed 42 for 60 steps at a 16 ms timestep, collect `render.RecordedSprites`, then run again
-with the same seed and assert both collections are equal element-by-element. A mismatch indicates
-non-determinism in the runner or the RNG wiring.
+Run with seed 42 for 60 steps at a 16 ms timestep, collect `render.RecordedSprites`, then run again with the same seed
+and assert both collections are equal element-by-element. A mismatch indicates non-determinism in the runner or the RNG
+wiring.
 
 #### Technical details
 
-- The test helper `RunNpcScenario(int seed)` constructs a fresh `HeadlessAdapter` and
-  `DeterministicEngineRunner` each time it is called, ensuring no shared state.
-- `ctx.Random.NextSingle()` is called twice per tick (for X and Y) in a fixed order; because
-  `Random` with the same seed produces the same sequence, both runs produce identical positions.
-- `HeadlessRenderProvider` is cast from `adapter.RenderProvider` to access `RecordedSprites`
-  directly. No `TestAdapter` is needed here because the assertion targets render output only.
+- The test helper `RunNpcScenario(int seed)` constructs a fresh `HeadlessAdapter` and `DeterministicEngineRunner` each
+  time it is called, ensuring no shared state.
+- `ctx.Random.NextSingle()` is called twice per tick (for X and Y) in a fixed order; because `Random` with the same seed
+  produces the same sequence, both runs produce identical positions.
+- `HeadlessRenderProvider` is cast from `adapter.RenderProvider` to access `RecordedSprites` directly. No `TestAdapter`
+  is needed here because the assertion targets render output only.
 - `DefaultMaterial` is declared as a `static readonly` field to avoid per-test allocation.
 
 #### Phase requirements
@@ -479,35 +475,32 @@ public sealed class AiIntegrationTests
 
 #### Objective
 
-Write `CombatIntegrationTests.cs`. Script 10 combat steps: every step submits a character sprite;
-on even steps (step % 2 == 0) also play a weapon sound. Use `TestAdapter` so that both render and
-audio calls appear together in `RecordedCalls`, then assert the combined sequence is correct and
-stable across two runs.
+Write `CombatIntegrationTests.cs`. Script 10 combat steps: every step submits a character sprite; on even steps (step %
+2 == 0) also play a weapon sound. Use `TestAdapter` so that both render and audio calls appear together in
+`RecordedCalls`, then assert the combined sequence is correct and stable across two runs.
 
 #### Technical details
 
-- `DeterministicEngineRunner` is constructed with `testAdapter.Inner` (the underlying
-  `HeadlessAdapter`) so the runner drives the frame lifecycle.
-- All provider submissions go through `testAdapter.RenderProvider` and `testAdapter.AudioPlayer`
-  (the recording decorators), so every call is captured in `testAdapter.RecordedCalls`.
+- `DeterministicEngineRunner` is constructed with `testAdapter.Inner` (the underlying `HeadlessAdapter`) so the runner
+  drives the frame lifecycle.
+- All provider submissions go through `testAdapter.RenderProvider` and `testAdapter.AudioPlayer` (the recording
+  decorators), so every call is captured in `testAdapter.RecordedCalls`.
 - The expected `RecordedCalls` sequence for 10 steps is:
   - Step 0: `SubmitSprite`, `StartPlayback("weapon_fire")`
   - Step 1: `SubmitSprite`
   - Step 2: `SubmitSprite`, `StartPlayback("weapon_fire")`
   - … (alternating)
 
-  Total: 15 entries (10 sprite submissions + 5 audio calls on even steps).
-  Note: `DeterministicEngineRunner` is wired to `testAdapter.Inner` (the `HeadlessAdapter`),
-  so `BeginFrame`, `EndFrame`, and `Present` are dispatched directly to `HeadlessRenderProvider`,
-  bypassing the `RecordingRenderProvider` decorator. Only explicit calls made through
+  Total: 15 entries (10 sprite submissions + 5 audio calls on even steps). Note: `DeterministicEngineRunner` is wired to
+  `testAdapter.Inner` (the `HeadlessAdapter`), so `BeginFrame`, `EndFrame`, and `Present` are dispatched directly to
+  `HeadlessRenderProvider`, bypassing the `RecordingRenderProvider` decorator. Only explicit calls made through
   `testAdapter.RenderProvider` and `testAdapter.AudioPlayer` appear in `RecordedCalls`.
 - Two identical runs with seed 1337 must produce equal `RecordedCalls` sequences.
 
 #### Phase requirements
 
 - (***Complete***) Combat call sequence is deterministic and correctly ordered
-  - GIVEN two `TestAdapter` instances driven by `DeterministicEngineRunner` with seed 1337 and
-    10 steps
+  - GIVEN two `TestAdapter` instances driven by `DeterministicEngineRunner` with seed 1337 and 10 steps
   - WHEN the combat tick callback submits a sprite each step and audio on even steps
   - THEN both `RecordedCalls` sequences are equal element-by-element
 
@@ -584,19 +577,19 @@ public sealed class CombatIntegrationTests
 
 #### Objective
 
-Write `MapGenerationIntegrationTests.cs`. Simulate 100 steps; each step submits 10 mesh draw
-commands whose geometry (position/scale) is derived from the seeded RNG. Assert that the total
-mesh count is 1000 and that all mesh entries are identical between two runs with seed 0.
+Write `MapGenerationIntegrationTests.cs`. Simulate 100 steps; each step submits 10 mesh draw commands whose geometry
+(position/scale) is derived from the seeded RNG. Assert that the total mesh count is 1000 and that all mesh entries are
+identical between two runs with seed 0.
 
 #### Technical details
 
-- Uses `HeadlessAdapter` directly (no `TestAdapter` needed — the assertion is on mesh count and
-  content, not on cross-provider call order).
+- Uses `HeadlessAdapter` directly (no `TestAdapter` needed — the assertion is on mesh count and content, not on
+  cross-provider call order).
 - `render.RecordedMeshes` provides direct access to the accumulated `MeshDrawDto` list.
-- 100 steps × 10 meshes per step = 1000 total mesh entries; this is asserted as a count before
-  the per-element equality check to give a clearer failure message if the count is wrong.
-- `ctx.Random.NextSingle()` is called six times per mesh (X, Y, Z, ScaleX, ScaleY, ScaleZ) in a
-  fixed order inside the callback. The same seed produces the same sequence both times.
+- 100 steps × 10 meshes per step = 1000 total mesh entries; this is asserted as a count before the per-element equality
+  check to give a clearer failure message if the count is wrong.
+- `ctx.Random.NextSingle()` is called six times per mesh (X, Y, Z, ScaleX, ScaleY, ScaleZ) in a fixed order inside the
+  callback. The same seed produces the same sequence both times.
 
 #### Phase requirements
 
@@ -671,22 +664,18 @@ public sealed class MapGenerationIntegrationTests
 
 ## See also
 
-- [Phase 2 — Headless adapter development](./phase-2-headless-adapter-development.md) — parent plan
-  that this integration suite closes out
-- [Issue #14](https://github.com/JohnLudlow/GameEngineAdapter/issues/14) — recording decorators
-  (prerequisite, complete)
-- [Issue #15](https://github.com/JohnLudlow/GameEngineAdapter/issues/15) — `SimulationTime` + tick
-  callback (prerequisite, partially complete — Phase 0 finishes it)
+- [Phase 2 — Headless adapter development](./phase-2-headless-adapter-development.md) — parent plan that this
+  integration suite closes out
+- [Issue #14](https://github.com/JohnLudlow/GameEngineAdapter/issues/14) — recording decorators (prerequisite, complete)
+- [Issue #15](https://github.com/JohnLudlow/GameEngineAdapter/issues/15) — `SimulationTime` + tick callback
+  (prerequisite, partially complete — Phase 0 finishes it)
 
 ## References
 
 - `src/GameEngineAdapter.Headless/DeterministicEngineRunner.cs` — runner to be extended in Phase 0
-- `src/GameEngineAdapter.Headless/DeterministicTickContext.cs` — tick context struct (already
-  exists)
-- `src/GameEngineAdapter.Headless/HeadlessRenderProvider.cs` — exposes `RecordedSprites` and
-  `RecordedMeshes`
-- `src/GameEngineAdapter.Headless/TestAdapter.cs` — exposes `RecordedCalls`, `Inner`, and
-  recording provider properties
-- `src/GameEngineAdapter.UnitTests/DeterministicEngineRunnerTests.cs` — existing runner tests
-  (must all remain green after Phase 0)
+- `src/GameEngineAdapter.Headless/DeterministicTickContext.cs` — tick context struct (already exists)
+- `src/GameEngineAdapter.Headless/HeadlessRenderProvider.cs` — exposes `RecordedSprites` and `RecordedMeshes`
+- `src/GameEngineAdapter.Headless/TestAdapter.cs` — exposes `RecordedCalls`, `Inner`, and recording provider properties
+- `src/GameEngineAdapter.UnitTests/DeterministicEngineRunnerTests.cs` — existing runner tests (must all remain green
+  after Phase 0)
 - xUnit docs: <https://xunit.net/>

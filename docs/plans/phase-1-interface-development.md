@@ -2,7 +2,9 @@
 
 ## Overview
 
-Phase 1 defines the stable adapter contracts and DTO shapes used by all adapters (rendering, input, audio, asset lifecycle). The goal is to produce small, well-documented C# interfaces and compact DTOs that minimize allocation and provide a stable surface for engine adapters.
+Phase 1 defines the stable adapter contracts and DTO shapes used by all adapters (rendering, input, audio, asset
+lifecycle). The goal is to produce small, well-documented C# interfaces and compact DTOs that minimize allocation and
+provide a stable surface for engine adapters.
 
 ## Table of contents
 
@@ -49,10 +51,14 @@ Complete (interfaces and DTOs implemented)
 
 ## Architectural considerations and constraints
 
-- Separation boundary: define a small, stable surface area between simulation (game logic) and engine bindings (render/input/audio/asset pipeline).
-- Capability negotiation: adapters must advertise capabilities (2D, 3D, text-only, audio) so game subsystems can enable/disable optional features at runtime.
-- Performance: minimize allocations and data marshaling across the adapter boundary; use structs and pooling for draw command collections.
-- Platform: some adapters require native platform binaries; provide configuration to select engines and fallbacks for CI/headless.
+- Separation boundary: define a small, stable surface area between simulation (game logic) and engine bindings
+  (render/input/audio/asset pipeline).
+- Capability negotiation: adapters must advertise capabilities (2D, 3D, text-only, audio) so game subsystems can
+  enable/disable optional features at runtime.
+- Performance: minimize allocations and data marshaling across the adapter boundary; use structs and pooling for draw
+  command collections.
+- Platform: some adapters require native platform binaries; provide configuration to select engines and fallbacks for
+  CI/headless.
 
 ## Implementation guide
 
@@ -69,19 +75,29 @@ Complete (interfaces and DTOs implemented)
 
 #### Objective
 
-Define stable adapter contracts and DTO shapes. Produce small, well-documented C# interfaces and compact DTOs that minimize allocation and provide a stable surface for engine adapters.
+Define stable adapter contracts and DTO shapes. Produce small, well-documented C# interfaces and compact DTOs that
+minimize allocation and provide a stable surface for engine adapters.
 
 #### Technical details
 
-- Define `IEngineAdapter` (lifecycle, capability descriptor, provider property accessors such as `RenderProvider`, `InputProvider`, `AudioPlayer`).
-- Define provider interfaces (`IRenderProvider`, `IInputProvider`, `IUserInterfaceProvider`, `IAssetProvider`) that expose minimal, adapter-owned runtime surfaces and DTO translation helpers. Providers are exposed as read-only properties on `IEngineAdapter`.
-- Providers are intentionally lightweight and adapter-owned: callers obtain a provider from the adapter and submit DTOs or poll events through that provider.
-- Define `IAudioPlayer` (play/stop/volume, audio asset references), `IAssetProvider` for asset caching and lifecycle management (unload, query, cache eviction), and `IAssetLoader` for loading assets from storage into the asset provider.
-- Provide capability descriptor model (`EngineCapabilities`) returned at adapter init and allow specific engine capability variants (e.g. `HeadlessEngineCapabilities`) to derive from the base capabilities.
+- Define `IEngineAdapter` (lifecycle, capability descriptor, provider property accessors such as `RenderProvider`,
+  `InputProvider`, `AudioPlayer`).
+- Define provider interfaces (`IRenderProvider`, `IInputProvider`, `IUserInterfaceProvider`, `IAssetProvider`) that
+  expose minimal, adapter-owned runtime surfaces and DTO translation helpers. Providers are exposed as read-only
+  properties on `IEngineAdapter`.
+- Providers are intentionally lightweight and adapter-owned: callers obtain a provider from the adapter and submit DTOs
+  or poll events through that provider.
+- Define `IAudioPlayer` (play/stop/volume, audio asset references), `IAssetProvider` for asset caching and lifecycle
+  management (unload, query, cache eviction), and `IAssetLoader` for loading assets from storage into the asset
+  provider.
+- Provide capability descriptor model (`EngineCapabilities`) returned at adapter init and allow specific engine
+  capability variants (e.g. `HeadlessEngineCapabilities`) to derive from the base capabilities.
 
 #### Type definitions
 
-The types listed below were originally referenced by the contracts before the Core project was fully fleshed out. They are now implemented under `src/GameEngineAdapter.Core/` (one file per type) in the `JohnLudlow.GameEngineAdapter.Core` namespace.
+The types listed below were originally referenced by the contracts before the Core project was fully fleshed out. They
+are now implemented under `src/GameEngineAdapter.Core/` (one file per type) in the `JohnLudlow.GameEngineAdapter.Core`
+namespace.
 
 The snippets are retained as illustrative examples; prefer the source files as the canonical definitions.
 
@@ -463,7 +479,8 @@ public readonly record struct MaterialDto(
 
 - Unit tests: provide small translator tests that map DTOs to engine calls using fakes.
 - Integration tests: use `HeadlessAdapter` and `TestAdapter` with recorded traces to verify behaviour.
-- Compatibility: version `IEngineAdapter` via `EngineCapabilities.ContractVersion`. This repository does not yet provide a central contract validator; hosts/adapters should compare versions and fail fast with actionable diagnostics.
+- Compatibility: version `IEngineAdapter` via `EngineCapabilities.ContractVersion`. This repository does not yet provide
+  a central contract validator; hosts/adapters should compare versions and fail fast with actionable diagnostics.
 
 ### Performance targets
 
@@ -472,11 +489,14 @@ public readonly record struct MaterialDto(
 
 ### Known issues and design concerns
 
-- **MaterialDescriptor removed**: `MaterialDescriptor.cs` previously declared a `readonly struct` with non-`readonly` fields, causing CS8340 errors. The type has been removed from the codebase. `MaterialDto` is now the single material DTO. If an engine-facing material definition is needed in future, define it as a `readonly record struct`.
+- **MaterialDescriptor removed**: `MaterialDescriptor.cs` previously declared a `readonly struct` with non-`readonly`
+  fields, causing CS8340 errors. The type has been removed from the codebase. `MaterialDto` is now the single material
+  DTO. If an engine-facing material definition is needed in future, define it as a `readonly record struct`.
 
 ## See also
 
-- Parent plan: [Engine Decoupling](https://github.com/JohnLudlow/FourXGame/blob/main/docs/plans/4x-game/technical/engine-decoupling/engine-decoupling.md)
+- Parent plan:
+  [Engine Decoupling](https://github.com/JohnLudlow/FourXGame/blob/main/docs/plans/4x-game/technical/engine-decoupling/engine-decoupling.md)
 
 ## References
 

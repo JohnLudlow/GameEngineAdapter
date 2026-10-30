@@ -3,7 +3,9 @@
 > [!TIP]
 > **Adapter contracts for decoupled game engines**
 
-GameEngineAdapter provides a set of stable, minimal C# interfaces and DTOs for building engine-agnostic game logic and adapters. It enables game code to run on multiple engines (MonoGame, Stride, Raylib, TUI, Headless, etc.) by defining a clear boundary between simulation and engine bindings for rendering, input, audio, and asset management.
+GameEngineAdapter provides a set of stable, minimal C# interfaces and DTOs for building engine-agnostic game logic and
+adapters. It enables game code to run on multiple engines (MonoGame, Stride, Raylib, TUI, Headless, etc.) by defining a
+clear boundary between simulation and engine bindings for rendering, input, audio, and asset management.
 
 **Why use this project?**
 
@@ -14,7 +16,8 @@ GameEngineAdapter provides a set of stable, minimal C# interfaces and DTOs for b
 ## IMPORTANT
 
 > [!IMPORTANT]
-> This project is under active development. The interface contracts are not yet stable and breaking changes may occur before v1.0. See [Phase 1 plan](docs/plans/phase-1-interface-development.md) for current status.
+> This project is under active development. The interface contracts are not yet stable and breaking changes may occur
+> before v1.0. See [Phase 1 plan](docs/plans/phase-1-interface-development.md) for current status.
 
 ## Features
 
@@ -26,13 +29,17 @@ GameEngineAdapter provides a set of stable, minimal C# interfaces and DTOs for b
 
 ## Roadmap
 
-- [Phase 1: Interface development](docs/plans/phase-1-interface-development.md) ([#2](https://github.com/JohnLudlow/GameEngineAdapter/issues/2))
+- [Phase 1: Interface development](docs/plans/phase-1-interface-development.md)
+  ([#2](https://github.com/JohnLudlow/GameEngineAdapter/issues/2))
   - Define stable adapter contracts and DTOs
   - Document interfaces and provide minimal working examples
   - Add headless/test adapters for CI
-- [Phase 2: Headless adapter development](docs/plans/phase-2-headless-adapter-development.md) ([#5](https://github.com/JohnLudlow/GameEngineAdapter/issues/5))
+- [Phase 2: Headless adapter development](docs/plans/phase-2-headless-adapter-development.md)
+  ([#5](https://github.com/JohnLudlow/GameEngineAdapter/issues/5))
   - Headless and test adapters for CI-clean simulation
-  - [Deterministic integration test suite](docs/plans/integration-test-suite.md) ([#16](https://github.com/JohnLudlow/GameEngineAdapter/issues/16)) — complete; see the [contributor guide](docs/guides/deterministic-integration-testing.md)
+  - [Deterministic integration test suite](docs/plans/integration-test-suite.md)
+    ([#16](https://github.com/JohnLudlow/GameEngineAdapter/issues/16)) — complete; see the
+    [contributor guide](docs/guides/deterministic-integration-testing.md)
 - Future: Engine-specific adapters (MonoGame, Stride, Raylib, etc.)
 
 ## Prerequisites
@@ -88,7 +95,8 @@ See [docs/plans/phase-1-interface-development.md](docs/plans/phase-1-interface-d
 
 ## Configuration
 
-Adapters may accept configuration via an `EngineConfig` object. See the plan for details. No global configuration is required for the library itself.
+Adapters may accept configuration via an `EngineConfig` object. See the plan for details. No global configuration is
+required for the library itself.
 
 ## Contributing
 
