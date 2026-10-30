@@ -6,7 +6,8 @@ Detailed description of the plan including purpose and intent as well as intende
 
 ## Table of contents
 
-- Table of contents with links to child sections, including subsections and child documents (which will be in a folder matching the plan document name).
+- Table of contents with links to child sections, including subsections and child documents (which will be in a folder
+  matching the plan document name).
 
 ## Plan issue
 
@@ -32,7 +33,8 @@ If the plan is composed of multiple parts and some are implemented, list the com
 
 ## Definition of terms
 
-Detailed table (sorted alphabetically by the term) of terms not considered 'common english'. Include references to articles about the term.
+Detailed table (sorted alphabetically by the term) of terms not considered 'common english'. Include references to
+articles about the term.
 
 | Term | Meaning | Reference |
 | ---- | ------- | --------- |
@@ -51,9 +53,8 @@ Detailed model of the plan's architectural consideration and flow of data within
 
 Detailed step-by-step implementation guide, including code snippets, unit tests and benchmarks.
 
-If requested, write steps to follow Test Driven Development principles, leading with a minimal breaking
-test, follwed by a minimal change to fix the test, followed by refactor, repeating until the plan is
-complete.
+If requested, write steps to follow Test Driven Development principles, leading with a minimal breaking test, follwed by
+a minimal change to fix the test, followed by refactor, repeating until the plan is complete.
 
 If the plan is extensive and complex, create multiple subsections to make these steps more legible.
 
@@ -159,5 +160,4 @@ This section will also contain links to related/sibling plans by topic and paren
 
 ## References
 
-A list of links to external resources such as library documentation or articles about
-relevant techniques
+A list of links to external resources such as library documentation or articles about relevant techniques

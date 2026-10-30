@@ -2,7 +2,13 @@
 
 ## Overview
 
-Phase 2 implements a minimal, dependency-free headless adapter for the GameEngineAdapter project. This adapter is housed in a separate assembly (`GameEngineAdapter.Headless`) under the `JohnLudlow.GameEngineAdapter.Headless` namespace, referencing the core contracts from `JohnLudlow.GameEngineAdapter.Core`. It enables deterministic, reproducible integration testing and CI runs by simulating rendering, input, and audio operations without any native platform dependencies. The HeadlessAdapter records render commands, simulates input via scripted events, and provides deterministic execution modes (fixed timestep, seeded RNG) to ensure stable test results. A TestAdapter is also provided for CI environments to record and assert adapter calls.
+Phase 2 implements a minimal, dependency-free headless adapter for the GameEngineAdapter project. This adapter is housed
+in a separate assembly (`GameEngineAdapter.Headless`) under the `JohnLudlow.GameEngineAdapter.Headless` namespace,
+referencing the core contracts from `JohnLudlow.GameEngineAdapter.Core`. It enables deterministic, reproducible
+integration testing and CI runs by simulating rendering, input, and audio operations without any native platform
+dependencies. The HeadlessAdapter records render commands, simulates input via scripted events, and provides
+deterministic execution modes (fixed timestep, seeded RNG) to ensure stable test results. A TestAdapter is also provided
+for CI environments to record and assert adapter calls.
 
 ## Table of contents
 
@@ -44,7 +50,14 @@ Phase 2 implements a minimal, dependency-free headless adapter for the GameEngin
 
 ***Complete***
 
-The Phase 2 deliverables are all in place. Phase 1 (`HeadlessAdapter` core) was complete in earlier work; Phase 2 (`TestAdapter` with provider-call recording) was completed via the `Recording*` decorator providers; Phase 3 (deterministic execution) was completed via `DeterministicEngineRunner.Run(int, Action<DeterministicTickContext>?)` plus the AI/combat/map-generation integration scenarios delivered under [#16](https://github.com/JohnLudlow/GameEngineAdapter/issues/16) (plan: [`integration-test-suite.md`](./integration-test-suite.md), guide: [`deterministic-integration-testing.md`](../guides/deterministic-integration-testing.md)). all unit tests pass on this branch.
+The Phase 2 deliverables are all in place. Phase 1 (`HeadlessAdapter` core) was complete in earlier work; Phase 2
+(`TestAdapter` with provider-call recording) was completed via the `Recording*` decorator providers; Phase 3
+(deterministic execution) was completed via `DeterministicEngineRunner.Run(int, Action<DeterministicTickContext>?)` plus
+the AI/combat/map-generation integration scenarios delivered under
+[#16](https://github.com/JohnLudlow/GameEngineAdapter/issues/16) (plan:
+[`integration-test-suite.md`](./integration-test-suite.md), guide:
+[`deterministic-integration-testing.md`](../guides/deterministic-integration-testing.md)). all unit tests pass on this
+branch.
 
 ## Definition of terms
 
@@ -60,13 +73,28 @@ The Phase 2 deliverables are all in place. Phase 1 (`HeadlessAdapter` core) was 
 
 ## Architectural considerations and constraints
 
-- **Separate assembly**: The headless adapter lives in a dedicated assembly (`GameEngineAdapter.Headless`) under the `JohnLudlow.GameEngineAdapter.Headless` namespace. This isolates the headless implementation from the core contracts defined in `JohnLudlow.GameEngineAdapter.Core`, ensuring engine-specific adapters do not depend on each other. The headless assembly references the core assembly via a project reference.
-- **Dependency on Phase 1 interfaces**: The HeadlessAdapter and TestAdapter must implement all interfaces defined in Phase 1 (`IEngineAdapter`, `IRenderProvider`, `IInputProvider`, `IUserInterfaceProvider`, `IAssetProvider`, `IAudioPlayer`, `IAssetLoader`). Implementation cannot begin until Phase 1 interfaces are finalized.
-- **No native platform dependencies**: The implementation must not use any native APIs, GPU, audio hardware, or OS-specific features. All adapters must run on any platform supported by .NET 10.
-- **Deterministic execution**: The goal is reproducible behaviour given the same scenario, seed, and scripted inputs. `DeterministicEngineRunner` provides a fixed-timestep loop, a seeded `Random`, and a `Run(int, Action<DeterministicTickContext>?)` overload that exposes simulation time and the runner's RNG via `DeterministicTickContext` so test authors can drive scenario logic deterministically.
-- **Call recording architecture**: Headless providers record their own interactions (e.g. `HeadlessRenderProvider.RecordedSprites`, `HeadlessAudioPlayer.RecordedCalls`). `TestAdapter` adds a second recording layer via `RecordingRenderProvider`, `RecordingInputProvider`, `RecordingAssetProvider`, and `RecordingAudioPlayer` decorators that wrap the inner headless providers and append every cross-provider call to `TestAdapter.RecordedCalls`. Note that the `IUserInterfaceProvider` is currently delegated directly (no decorator) because the UI contract is still pending finalisation.
+- **Separate assembly**: The headless adapter lives in a dedicated assembly (`GameEngineAdapter.Headless`) under the
+  `JohnLudlow.GameEngineAdapter.Headless` namespace. This isolates the headless implementation from the core contracts
+  defined in `JohnLudlow.GameEngineAdapter.Core`, ensuring engine-specific adapters do not depend on each other. The
+  headless assembly references the core assembly via a project reference.
+- **Dependency on Phase 1 interfaces**: The HeadlessAdapter and TestAdapter must implement all interfaces defined in
+  Phase 1 (`IEngineAdapter`, `IRenderProvider`, `IInputProvider`, `IUserInterfaceProvider`, `IAssetProvider`,
+  `IAudioPlayer`, `IAssetLoader`). Implementation cannot begin until Phase 1 interfaces are finalized.
+- **No native platform dependencies**: The implementation must not use any native APIs, GPU, audio hardware, or
+  OS-specific features. All adapters must run on any platform supported by .NET 10.
+- **Deterministic execution**: The goal is reproducible behaviour given the same scenario, seed, and scripted inputs.
+  `DeterministicEngineRunner` provides a fixed-timestep loop, a seeded `Random`, and a
+  `Run(int, Action<DeterministicTickContext>?)` overload that exposes simulation time and the runner's RNG via
+  `DeterministicTickContext` so test authors can drive scenario logic deterministically.
+- **Call recording architecture**: Headless providers record their own interactions (e.g.
+  `HeadlessRenderProvider.RecordedSprites`, `HeadlessAudioPlayer.RecordedCalls`). `TestAdapter` adds a second recording
+  layer via `RecordingRenderProvider`, `RecordingInputProvider`, `RecordingAssetProvider`, and `RecordingAudioPlayer`
+  decorators that wrap the inner headless providers and append every cross-provider call to `TestAdapter.RecordedCalls`.
+  Note that the `IUserInterfaceProvider` is currently delegated directly (no decorator) because the UI contract is still
+  pending finalisation.
 - **Separation of concerns**: Each provider (render, input, UI, asset, audio) is independently testable and replaceable.
-- **CI compatibility**: The adapters must run in CI environments (GitHub Actions, Azure DevOps, etc.) without requiring graphics or audio hardware.
+- **CI compatibility**: The adapters must run in CI environments (GitHub Actions, Azure DevOps, etc.) without requiring
+  graphics or audio hardware.
 
 ## Implementation guide
 
@@ -76,7 +104,11 @@ The Phase 2 deliverables are all in place. Phase 1 (`HeadlessAdapter` core) was 
   - GIVEN deterministic seeds and scenario scripts
   - WHEN CI runs the integration suite
   - THEN results are stable and asserted by tests.
-  - Note: integration scenarios for AI, combat, and map generation are implemented in `src/GameEngineAdapter.UnitTests/AiIntegrationTests.cs`, `CombatIntegrationTests.cs`, and `MapGenerationIntegrationTests.cs`. The dedicated plan is [`integration-test-suite.md`](./integration-test-suite.md); the contributor guide is [`deterministic-integration-testing.md`](../guides/deterministic-integration-testing.md).
+  - Note: integration scenarios for AI, combat, and map generation are implemented in
+    `src/GameEngineAdapter.UnitTests/AiIntegrationTests.cs`, `CombatIntegrationTests.cs`, and
+    `MapGenerationIntegrationTests.cs`. The dedicated plan is
+    [`integration-test-suite.md`](./integration-test-suite.md); the contributor guide is
+    [`deterministic-integration-testing.md`](../guides/deterministic-integration-testing.md).
 
 ### Phase 1 — HeadlessAdapter core
 
@@ -84,16 +116,26 @@ The Phase 2 deliverables are all in place. Phase 1 (`HeadlessAdapter` core) was 
 
 #### Objective
 
-Implement a `HeadlessAdapter` and its providers that simulate all engine operations without any platform dependencies, recording render and input operations for verification. Success criteria: the adapter implements all Phase 1 contracts and can run a complete simulation loop without native dependencies.
+Implement a `HeadlessAdapter` and its providers that simulate all engine operations without any platform dependencies,
+recording render and input operations for verification. Success criteria: the adapter implements all Phase 1 contracts
+and can run a complete simulation loop without native dependencies.
 
 #### Technical details
 
-- **HeadlessAdapter**: Implements `IEngineAdapter`. Composes headless providers for rendering, input, UI, assets, and audio. Currently returns `EngineCapabilities` (including `ContractVersion`) from the `Capabilities` property.
-- **HeadlessRenderProvider**: Implements `IRenderProvider`. Records all render commands (`SubmitSprite`, `SubmitText`, `SubmitMesh`) to separate typed lists per draw type (`RecordedSprites`, `RecordedTexts`, `RecordedMeshes`) for later inspection. `BeginFrame` returns a `FrameScope`; `EndFrame` and `Present` are no-ops.
-- **HeadlessInputProvider**: Implements `IInputProvider`. Provides deterministic, scriptable input state via methods such as `ScriptKeyDown`, `ScriptKeyUp`, and `ScriptMousePosition`.
-- **HeadlessUserInterfaceProvider**: Implements `IUserInterfaceProvider`. Currently empty (pending final UI provider contract).
-- **HeadlessAssetProvider**: Implements `IAssetProvider`. Manages asset cache and lifecycle state in memory without actual file or resource access. Composes a `HeadlessAssetLoader` (implementing `IAssetLoader`) that returns stub assets for any requested identifier.
-- **HeadlessAudioPlayer**: Implements `IAudioPlayer`. Records calls (`StartPlayback`, `StopPlayback`, `SetVolume`) for test assertion.
+- **HeadlessAdapter**: Implements `IEngineAdapter`. Composes headless providers for rendering, input, UI, assets, and
+  audio. Currently returns `EngineCapabilities` (including `ContractVersion`) from the `Capabilities` property.
+- **HeadlessRenderProvider**: Implements `IRenderProvider`. Records all render commands (`SubmitSprite`, `SubmitText`,
+  `SubmitMesh`) to separate typed lists per draw type (`RecordedSprites`, `RecordedTexts`, `RecordedMeshes`) for later
+  inspection. `BeginFrame` returns a `FrameScope`; `EndFrame` and `Present` are no-ops.
+- **HeadlessInputProvider**: Implements `IInputProvider`. Provides deterministic, scriptable input state via methods
+  such as `ScriptKeyDown`, `ScriptKeyUp`, and `ScriptMousePosition`.
+- **HeadlessUserInterfaceProvider**: Implements `IUserInterfaceProvider`. Currently empty (pending final UI provider
+  contract).
+- **HeadlessAssetProvider**: Implements `IAssetProvider`. Manages asset cache and lifecycle state in memory without
+  actual file or resource access. Composes a `HeadlessAssetLoader` (implementing `IAssetLoader`) that returns stub
+  assets for any requested identifier.
+- **HeadlessAudioPlayer**: Implements `IAudioPlayer`. Records calls (`StartPlayback`, `StopPlayback`, `SetVolume`) for
+  test assertion.
 
 #### Phase requirements
 
@@ -408,9 +450,14 @@ Provide a `TestAdapter` that wraps the HeadlessAdapter and records calls for ass
 #### Technical details
 
 - **TestAdapter**: Implements `IEngineAdapter`. Composes a `HeadlessAdapter` internally.
-- **Call recording**: Records both adapter lifecycle calls (`InitializeAsync`, `ShutdownAsync`) and every provider method call to `RecordedCalls`. Each entry is a `RecordedCall(ProviderName, MethodName, Arguments)`.
-- **Provider recording**: `TestAdapter` exposes `Recording*Provider` decorator instances (`RecordingRenderProvider`, `RecordingInputProvider`, `RecordingAssetProvider`, `RecordingAudioPlayer`) that wrap the inner `HeadlessAdapter`'s providers. Each decorator forwards the call to the inner provider and appends a `RecordedCall` entry. `UserInterfaceProvider` is delegated directly (no decorator) pending the UI contract.
-- **Inner accessor**: `TestAdapter.Inner` exposes the wrapped `HeadlessAdapter` so test code that needs to bypass recording (e.g. `DeterministicEngineRunner` lifecycle calls) can reach the unwrapped providers.
+- **Call recording**: Records both adapter lifecycle calls (`InitializeAsync`, `ShutdownAsync`) and every provider
+  method call to `RecordedCalls`. Each entry is a `RecordedCall(ProviderName, MethodName, Arguments)`.
+- **Provider recording**: `TestAdapter` exposes `Recording*Provider` decorator instances (`RecordingRenderProvider`,
+  `RecordingInputProvider`, `RecordingAssetProvider`, `RecordingAudioPlayer`) that wrap the inner `HeadlessAdapter`'s
+  providers. Each decorator forwards the call to the inner provider and appends a `RecordedCall` entry.
+  `UserInterfaceProvider` is delegated directly (no decorator) pending the UI contract.
+- **Inner accessor**: `TestAdapter.Inner` exposes the wrapped `HeadlessAdapter` so test code that needs to bypass
+  recording (e.g. `DeterministicEngineRunner` lifecycle calls) can reach the unwrapped providers.
 
 #### Phase requirements
 
@@ -528,13 +575,23 @@ public sealed class TestAdapter : IEngineAdapter
 
 #### Objective
 
-Provide a deterministic execution harness for headless simulations (fixed timestep configuration and seeded RNG) to enable reproducible test runs.
+Provide a deterministic execution harness for headless simulations (fixed timestep configuration and seeded RNG) to
+enable reproducible test runs.
 
 #### Technical details
 
-- **Fixed timestep**: `DeterministicEngineRunner` advances `SimulationTime` by `_fixedTimestep` after each step. Step `i`'s `onTick` callback observes `SimulationTime = i * fixedTimestep` (so step 0 sees `TimeSpan.Zero`).
-- **Seeded RNG**: The runner owns a `Random` seeded with the provided seed, exposed as `DeterministicEngineRunner.Random`. The same reference is passed to every `onTick` callback as `DeterministicTickContext.Random`, so scenario logic that draws from the runner's RNG is reproducible.
-- **Scenario scripting**: Scenarios are authored in two layers. (a) `HeadlessInputProvider` exposes scripted-input setters (`ScriptKeyDown`, `ScriptKeyUp`, `ScriptMousePosition`) for tests that need to drive input. (b) The per-tick `onTick` callback lets tests drive arbitrary simulation logic — render submissions, audio calls, RNG draws — using `DeterministicTickContext`. The current integration scenarios (`AiIntegrationTests.cs`, `CombatIntegrationTests.cs`, `MapGenerationIntegrationTests.cs`) exercise (b) only; no scripted-input scenarios using the `Script*` setters exist yet. There is no separate scenario file format and none is currently planned — scenarios are written as ordinary C# test methods.
+- **Fixed timestep**: `DeterministicEngineRunner` advances `SimulationTime` by `_fixedTimestep` after each step. Step
+  `i`'s `onTick` callback observes `SimulationTime = i * fixedTimestep` (so step 0 sees `TimeSpan.Zero`).
+- **Seeded RNG**: The runner owns a `Random` seeded with the provided seed, exposed as
+  `DeterministicEngineRunner.Random`. The same reference is passed to every `onTick` callback as
+  `DeterministicTickContext.Random`, so scenario logic that draws from the runner's RNG is reproducible.
+- **Scenario scripting**: Scenarios are authored in two layers. (a) `HeadlessInputProvider` exposes scripted-input
+  setters (`ScriptKeyDown`, `ScriptKeyUp`, `ScriptMousePosition`) for tests that need to drive input. (b) The per-tick
+  `onTick` callback lets tests drive arbitrary simulation logic — render submissions, audio calls, RNG draws — using
+  `DeterministicTickContext`. The current integration scenarios (`AiIntegrationTests.cs`, `CombatIntegrationTests.cs`,
+  `MapGenerationIntegrationTests.cs`) exercise (b) only; no scripted-input scenarios using the `Script*` setters exist
+  yet. There is no separate scenario file format and none is currently planned — scenarios are written as ordinary C#
+  test methods.
 
 #### Phase requirements
 
@@ -546,7 +603,8 @@ Provide a deterministic execution harness for headless simulations (fixed timest
 - (***Complete***) Seeded RNG reproducibility
   - GIVEN a fixed RNG seed
   - WHEN the simulation runs twice with identical inputs
-  - THEN both runs produce identical observable outputs (recorded sprites, recorded calls, etc.) — see the AI/combat/map-generation integration scenarios for worked examples.
+  - THEN both runs produce identical observable outputs (recorded sprites, recorded calls, etc.) — see the
+    AI/combat/map-generation integration scenarios for worked examples.
 
 #### Examples
 
@@ -633,26 +691,40 @@ public sealed class DeterministicEngineRunner
 ### Testing and compatibility
 
 - Unit tests cover each headless provider independently, plus `TestAdapter` and `DeterministicEngineRunner`.
-- Integration scenarios for AI, combat, and map generation are implemented under `src/GameEngineAdapter.UnitTests/*IntegrationTests.cs` (plan: [`integration-test-suite.md`](./integration-test-suite.md), contributor guide: [`deterministic-integration-testing.md`](../guides/deterministic-integration-testing.md)).
-- Adapters are designed to be compatible with CI environments (GitHub Actions, Azure DevOps, etc.) without requiring graphics or audio hardware.
-- `TestAdapter` exposes `RecordedCalls` for asserting both adapter lifecycle calls and every provider method call across the recording decorators.
+- Integration scenarios for AI, combat, and map generation are implemented under
+  `src/GameEngineAdapter.UnitTests/*IntegrationTests.cs` (plan:
+  [`integration-test-suite.md`](./integration-test-suite.md), contributor guide:
+  [`deterministic-integration-testing.md`](../guides/deterministic-integration-testing.md)).
+- Adapters are designed to be compatible with CI environments (GitHub Actions, Azure DevOps, etc.) without requiring
+  graphics or audio hardware.
+- `TestAdapter` exposes `RecordedCalls` for asserting both adapter lifecycle calls and every provider method call across
+  the recording decorators.
 
 ### Performance targets
 
-- HeadlessAdapter and TestAdapter must complete integration scenarios in under 100ms per scenario on typical CI hardware.
+- HeadlessAdapter and TestAdapter must complete integration scenarios in under 100ms per scenario on typical CI
+  hardware.
 - No allocations or operations that would cause test flakiness or non-determinism.
 - Call recording memory usage bounded by scenario size; consider clearing between scenarios.
 
 ## Known issues and design concerns
 
-- **Scenario scripting format**: `HeadlessInputProvider` supports scripted state via `Script*` setter methods, but no integration scenario currently exercises them — the existing scenarios drive simulation logic from the per-tick `onTick` callback in C#. There is no queue/script playback format. Adopting a richer playback format (e.g. timestamped event queue, file-backed scenario script), or adding a scripted-input integration scenario, is deferred to a future phase.
-- **`IUserInterfaceProvider` decorator**: `TestAdapter` delegates `UserInterfaceProvider` directly to the inner `HeadlessAdapter` because the UI provider contract is still pending finalisation. Once the contract is fixed, a `RecordingUserInterfaceProvider` decorator should be added so UI calls also land in `RecordedCalls`.
-- **Call recording overhead**: Recording every provider call may impact performance for very large scenarios. The recording buffer is currently unbounded; consider clearing between scenarios for long-running test runs.
+- **Scenario scripting format**: `HeadlessInputProvider` supports scripted state via `Script*` setter methods, but no
+  integration scenario currently exercises them — the existing scenarios drive simulation logic from the per-tick
+  `onTick` callback in C#. There is no queue/script playback format. Adopting a richer playback format (e.g. timestamped
+  event queue, file-backed scenario script), or adding a scripted-input integration scenario, is deferred to a future
+  phase.
+- **`IUserInterfaceProvider` decorator**: `TestAdapter` delegates `UserInterfaceProvider` directly to the inner
+  `HeadlessAdapter` because the UI provider contract is still pending finalisation. Once the contract is fixed, a
+  `RecordingUserInterfaceProvider` decorator should be added so UI calls also land in `RecordedCalls`.
+- **Call recording overhead**: Recording every provider call may impact performance for very large scenarios. The
+  recording buffer is currently unbounded; consider clearing between scenarios for long-running test runs.
 
 ## See also
 
 - [Phase 1 — Interface development](./phase-1-interface-development.md)
-- Parent plan: [Engine Decoupling](https://github.com/JohnLudlow/FourXGame/blob/main/docs/plans/4x-game/technical/engine-decoupling/engine-decoupling.md)
+- Parent plan:
+  [Engine Decoupling](https://github.com/JohnLudlow/FourXGame/blob/main/docs/plans/4x-game/technical/engine-decoupling/engine-decoupling.md)
 - [Integration test suite plan](./integration-test-suite.md)
 - [Deterministic integration testing guide](../guides/deterministic-integration-testing.md)
 

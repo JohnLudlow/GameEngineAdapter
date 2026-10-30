@@ -2,7 +2,8 @@
 
 ## Overview
 
-Detailed description of the topic (functional area or component) including purpose and intent as well as intended use cases.
+Detailed description of the topic (functional area or component) including purpose and intent as well as intended use
+cases.
 
 ## Table of contents
 
@@ -19,7 +20,8 @@ Detailed list of terms not considered 'common english'. Include references to ar
 
 ## Technical guide
 
-Detailed model of the technical details of the component or functional area, including logical flow and flow of data within the system.
+Detailed model of the technical details of the component or functional area, including logical flow and flow of data
+within the system.
 
 - Include constraints such as performance considerations and related components
 - Include ASCII-art or mermaid diagrams where appropriate
@@ -70,5 +72,4 @@ This section will also contain links to related/sibling features by topic and pa
 
 ## References
 
-A list of links to external resources such as library documentation or articles about
-relevant techniques
+A list of links to external resources such as library documentation or articles about relevant techniques

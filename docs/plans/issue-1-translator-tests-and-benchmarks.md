@@ -42,10 +42,15 @@ Completed
 
 ## Architectural considerations and constraints
 
-- **Do not change contracts**: `JohnLudlow.GameEngineAdapter.Core` is the public contract assembly. Translator tests and benchmarks should not require changes to public interfaces unless strictly necessary.
-- **Keep engine-agnostic**: Translator tests should validate mapping logic without taking a dependency on a real engine SDK.
-- **Avoid benchmark noise**: Benchmarks should run in Release and avoid allocations or I/O unrelated to the measured translation.
-- **CI integration already scaffolded**: There is an existing composite action at `actions/steps/benchmark/action.yml` with TODO placeholders for the benchmark project path, and the workflow job is currently commented out in `.github/workflows/main.yml`.
+- **Do not change contracts**: `JohnLudlow.GameEngineAdapter.Core` is the public contract assembly. Translator tests and
+  benchmarks should not require changes to public interfaces unless strictly necessary.
+- **Keep engine-agnostic**: Translator tests should validate mapping logic without taking a dependency on a real engine
+  SDK.
+- **Avoid benchmark noise**: Benchmarks should run in Release and avoid allocations or I/O unrelated to the measured
+  translation.
+- **CI integration already scaffolded**: There is an existing composite action at `actions/steps/benchmark/action.yml`
+  with TODO placeholders for the benchmark project path, and the workflow job is currently commented out in
+  `.github/workflows/main.yml`.
 
 ## Implementation guide
 
@@ -72,25 +77,31 @@ Completed
 
 #### Objective
 
-Add unit tests that verify translation from DTOs (`SpriteDrawDto`, `TextDrawDto`, `MeshDrawDto`, `MaterialDto`, `TransformDto`) into an engine-facing API using fakes/spies.
+Add unit tests that verify translation from DTOs (`SpriteDrawDto`, `TextDrawDto`, `MeshDrawDto`, `MaterialDto`,
+`TransformDto`) into an engine-facing API using fakes/spies.
 
 #### Technical details
 
 1. **Create a minimal fake engine call surface** inside the UnitTests project.
-   - Example: `IFakeRenderBackend` with methods like `DrawSprite(string spriteId, TransformDto transform, MaterialDto material, int layer)`.
+   - Example: `IFakeRenderBackend` with methods like
+     `DrawSprite(string spriteId, TransformDto transform, MaterialDto material, int layer)`.
    - Implementation: `RecordingFakeRenderBackend` stores each call (method name + args) into a list.
 
-2. **Create a sample translator provider** (test-only) that implements `IRenderProvider` and forwards to the fake backend.
+2. **Create a sample translator provider** (test-only) that implements `IRenderProvider` and forwards to the fake
+   backend.
    - Example type: `TranslatingRenderProvider : IRenderProvider`.
-   - Translation should be intentionally simple and explicit (pass-through of IDs/transform/material/layer). The goal is to validate mapping patterns, not to build a real engine adapter.
+   - Translation should be intentionally simple and explicit (pass-through of IDs/transform/material/layer). The goal is
+     to validate mapping patterns, not to build a real engine adapter.
 
 3. **Write translator tests** validating:
    - Ordering: calls arrive in the same order as DTO submissions.
    - Fidelity: all DTO fields are forwarded without mutation.
-   - Frame boundaries: `BeginFrame`/`EndFrame`/`Present` call sequences can be asserted if the translator provider chooses to forward them.
+   - Frame boundaries: `BeginFrame`/`EndFrame`/`Present` call sequences can be asserted if the translator provider
+     chooses to forward them.
 
 4. **Keep tests isolated**
-   - Do not reuse `HeadlessRenderProvider` for translator tests; that provider records DTOs but does not exercise a DTO→engine mapping.
+   - Do not reuse `HeadlessRenderProvider` for translator tests; that provider records DTOs but does not exercise a
+     DTO→engine mapping.
 
 #### Phase requirements
 
@@ -116,7 +127,8 @@ Add a BenchmarkDotNet benchmark project that measures DTO translation performanc
 
 1. **Create a new benchmark project**
    - Path: `src/GameEngineAdapter.Benchmarks/GameEngineAdapter.Benchmarks.csproj`
-   - References: `GameEngineAdapter.Core` and (optionally) a small internal translation implementation shared with tests.
+   - References: `GameEngineAdapter.Core` and (optionally) a small internal translation implementation shared with
+     tests.
    - Packages: `BenchmarkDotNet`.
 
 2. **Define benchmarks**
@@ -125,7 +137,8 @@ Add a BenchmarkDotNet benchmark project that measures DTO translation performanc
    - Ensure Release configuration and `--filter *` works.
 
 3. **Wire up the existing CI benchmark action (optional but recommended)**
-   - Replace the `<path to benchmark project>` placeholders in `actions/steps/benchmark/action.yml` with the actual benchmark project path.
+   - Replace the `<path to benchmark project>` placeholders in `actions/steps/benchmark/action.yml` with the actual
+     benchmark project path.
    - Uncomment/enable the `benchmark` job in `.github/workflows/main.yml` once the benchmark project exists.
 
 #### Phase requirements
